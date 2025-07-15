@@ -16,3 +16,6 @@ dependencies = [
     "streamlit>=1.46.1",
     "tiktoken>=0.9.0",
 ]
+
+[tool.ruff]
+line-length = 120
