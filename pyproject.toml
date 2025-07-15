@@ -1,7 +1,7 @@
 [project]
 name = "govai"
 version = "0.1.0"
-description = "Add your description here"
+description = "Summarises HOA rules and highlights inconsistencies"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
