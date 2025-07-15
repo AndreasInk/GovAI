@@ -1,8 +1,12 @@
+"""Utilities for retrieving and storing the result of an OpenAI job."""
+
 import time
 from openai import OpenAI
 from pathlib import Path
 
-def wait_for(job_id, sleep_sec=15):
+def wait_for(job_id: str, sleep_sec: float = 15) -> str:
+    """Poll the API until the given job finishes and return its output."""
+
     client = OpenAI()
     while True:
         r = client.responses.retrieve(job_id)
