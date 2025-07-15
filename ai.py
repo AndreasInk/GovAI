@@ -18,6 +18,9 @@ import os
 import base64
 from io import BytesIO
 from typing import Any, Generator, List
+import hashlib
+import json
+from pathlib import Path
 
 import numpy as np
 from PIL import Image, ImageOps  # Pillow
@@ -34,6 +37,22 @@ if not OPENAI_API_KEY:
     )
 
 ai_client = OpenAI(api_key=OPENAI_API_KEY)
+
+# ------------------------------------------------------------------------------
+# 📦  Simple on-disk cache for embeddings
+# ------------------------------------------------------------------------------
+_CACHE_PATH = Path(__file__).parent / "data" / "embed_cache.json"
+try:
+    _EMBED_CACHE: dict[str, list[float]] = json.loads(_CACHE_PATH.read_text())
+except Exception:
+    _EMBED_CACHE = {}
+
+def _save_cache() -> None:
+    try:
+        _CACHE_PATH.parent.mkdir(exist_ok=True)
+        _CACHE_PATH.write_text(json.dumps(_EMBED_CACHE))
+    except Exception:
+        pass
 
 # ------------------------------------------------------------------------------
 # 🖼️  Image utilities
@@ -101,9 +120,32 @@ def embed(texts: List[str] | str, model: str = "text-embedding-3-small") -> np.n
     if single:
         texts = [texts]  # type: ignore[list-item]
 
-    resp = ai_client.embeddings.create(model=model, input=texts)  # type: ignore[arg-type]
-    vecs = np.array([item.embedding for item in resp.data])
+    keys: List[str] = []
+    missing: List[str] = []
+    results: List[np.ndarray | None] = []
 
+    for text in texts:
+        h = hashlib.sha1(text.encode("utf-8")).hexdigest()
+        keys.append(h)
+        cached = _EMBED_CACHE.get(h)
+        if cached is None:
+            missing.append(text)
+            results.append(None)
+        else:
+            results.append(np.array(cached))
+
+    if missing:
+        resp = ai_client.embeddings.create(model=model, input=missing)  # type: ignore[arg-type]
+        new_vecs = [np.array(item.embedding) for item in resp.data]
+        it = iter(new_vecs)
+        for i, res in enumerate(results):
+            if res is None:
+                vec = next(it)
+                results[i] = vec
+                _EMBED_CACHE[keys[i]] = vec.tolist()
+        _save_cache()
+
+    vecs = np.stack(results)
     return vecs[0] if single else vecs
 
 

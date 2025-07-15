@@ -33,5 +33,8 @@ The app displays each flagged sentence alongside its source text. Accepted edits
 ## Regenerating Drafts
 The `regenerate_all.sh` helper script rebuilds embeddings, launches the document MCP server and an ngrok tunnel, and generates a new draft using the research script. Review `draft_new.md` before replacing `draft.md`.
 
-## License
-Add appropriate license information here.
+# GovAI Utilities
+
+This repo contains helper scripts for document processing and AI-powered
+analysis.  Embeddings retrieved from OpenAI are now cached on disk in
+`data/embed_cache.json` to avoid recomputation when rerunning the tools.
