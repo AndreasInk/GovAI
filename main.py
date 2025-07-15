@@ -17,7 +17,10 @@ Quick-start
     • flags.json         – list[tuple(similarity, sentence, [ids])]
 """
 from __future__ import annotations
-import os, json, uuid, time
+
+import os
+import json
+import time
 from pathlib import Path
 from typing import List, Tuple
 
