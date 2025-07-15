@@ -1,5 +1,3 @@
-
-
 #!/usr/bin/env python3
 """
 doc-mcp – HOA document retrieval MCP server
@@ -149,7 +147,8 @@ def _search_chunks(query: str, top_k: int = 8) -> List[dict]:
 
     # Fallback: OR if AND yields nothing
     if not candidate_ids:
-        candidate_ids = set.union(*(inv_index[t] for t in terms if t in inv_index))
+        candidate_sets = [inv_index[t] for t in terms if t in inv_index]
+        candidate_ids = set().union(*candidate_sets) if candidate_sets else set()
 
     # Rank by naive TF (term freq sum)
     scored = []
@@ -184,12 +183,15 @@ def _id_to_chunk(cid: str) -> dict:
 #                               MCP tools                                    #
 # ---------------------------------------------------------------------------#
 @mcp.tool()
-async def search(query: str) -> list[dict]:
+async def search(query: str) -> dict:
     """
     Full‑text search across **all** PDFs.
 
-    Returns a list of up to 8 results with keys:
-        id, document_name, page_number, content
+    Returns a dict with key "results" -> list (up to 8 items). Each result is a dict with:
+        - id: chunk id string
+        - title: string, e.g. "Bylaws Approved 08.27.2024.pdf (p.94)"
+        - text: short snippet (single line, max ~200 chars)
+        - url: string, e.g. "mcp://<chunk_id>"
     """
     # ensure all docs are indexed once
     for pdf in DOC_DIR.glob("*.pdf"):
@@ -197,7 +199,23 @@ async def search(query: str) -> list[dict]:
 
     TOP_K = 8  # Deep‑Research expects at most 8 hits
     hits = _search_chunks(query, TOP_K)
-    return hits
+    results = []
+    for ch in hits:
+        # Create a short, single‑line snippet for the UI
+        snippet = textwrap.shorten(
+            ch["content"].strip().replace("\n", " "),
+            width=200,
+            placeholder="…",
+        )
+        results.append(
+            {
+                "id": ch["id"],
+                "title": f"{ch['document_name']} (p.{ch['page_number']})",
+                "text": snippet,
+                "url": f"mcp://{ch['id']}",
+            }
+        )
+    return {"results": results}
 
 
 @mcp.tool()

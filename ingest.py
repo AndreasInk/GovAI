@@ -13,9 +13,9 @@ The script:
 1) extracts raw text from one or more *source* documents (PDF or Word),
 2) splits the text into **token‑bounded chunks** (default ≈400 tokens),
 3) fetches OpenAI embeddings for every chunk and saves them to `chunk_vecs.npy`,
-4) writes the plain text chunks to `chunks.json`,
+4) writes the plain‑text chunks to `chunks.json`,
 5) *(optional)* compares each *summary* sentence in `draft.md` against its cited
-   source chunks and emits `flags.json` (similar to the prototype notebook).
+   source chunks and emits `flags.json`.
 
 Dependencies
 ------------
@@ -59,7 +59,6 @@ import ai  # noqa: E402
 
 ENC = get_encoding("cl100k_base")
 
-
 # ---------------------------------------------------------------------------#
 #                               Text Extraction                              #
 # ---------------------------------------------------------------------------#
@@ -86,7 +85,6 @@ def extract_text(files: Iterable[Path]) -> str:
             sys.exit(f"Unsupported file type: {fp.name}")
     return "\n".join(parts)
 
-
 # ---------------------------------------------------------------------------#
 #                                 Chunking                                   #
 # ---------------------------------------------------------------------------#
@@ -107,7 +105,6 @@ def chunk_text(text: str, max_tokens: int = 400) -> List[str]:
         chunks.append(" ".join(current).strip())
     return chunks
 
-
 # ---------------------------------------------------------------------------#
 #                    Stable‑ID chunk generator per source file               #
 # ---------------------------------------------------------------------------#
@@ -118,7 +115,9 @@ def file_chunks(fp: Path, max_tokens: int = 400) -> List[Tuple[str, str]]:
 
     Currently supports PDFs only – DOCX fallback uses page_no=0.
     """
-    file_id = fp.stem.replace(" ", "_").lower()   # normalise spaces + lower‑case
+    # Normalise filename → lowercase, alphanumeric + underscores only
+    file_id = re.sub(r"[^a-z0-9]+", "_", fp.stem.lower())  # collapse any run of non‑alnum chars
+    file_id = re.sub(r"_+", "_", file_id).strip("_")       # squeeze repeated "_" and trim edges
     chunks: List[Tuple[str, str]] = []
 
     if fp.suffix.lower() == ".pdf":
@@ -148,11 +147,14 @@ def file_chunks(fp: Path, max_tokens: int = 400) -> List[Tuple[str, str]]:
 # ---------------------------------------------------------------------------#
 _SENT_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
-
 def load_draft_sentences(draft_path: Path) -> List[str]:
-    """Return a list of sentences extracted from the *draft* file.
+    """Extract sentences from the *draft* file with extra cleanup.
 
-    Supports PDF, DOCX and plain‑text / Markdown files.
+    – Collapses all runs of whitespace (incl. newlines) to single spaces
+      so hard line‑breaks in PDFs don’t create orphaned fragments.
+    – Splits on punctuation (.!? ) via `_SENT_SPLIT_RE`.
+    – Fuses any leftover pieces shorter than 10 words into the
+      preceding sentence to avoid 1–2‑word fragments.
     """
     suffix = draft_path.suffix.lower()
 
@@ -161,15 +163,45 @@ def load_draft_sentences(draft_path: Path) -> List[str]:
     elif suffix in {".docx", ".doc"}:
         text = _extract_docx(draft_path)
     else:
-        # Fallback: treat as text/markdown ‑ decode with utf‑8
+        # Fallback: treat as text/markdown – decode with utf‑8
         text = draft_path.read_text(encoding="utf-8", errors="ignore")
 
-    return _SENT_SPLIT_RE.split(text)
+    # Normalise whitespace so line‑breaks don’t split sentences
+    text = re.sub(r"\s+", " ", text).strip()
 
+    # Initial sentence split
+    raw_parts = _SENT_SPLIT_RE.split(text)
+
+    # Merge tiny fragments (≤9 words) into the previous sentence
+    sentences: List[str] = []
+    for part in raw_parts:
+        part = part.strip()
+        if not part:
+            continue
+        if sentences and len(part.split()) < 10:
+            sentences[-1] = f"{sentences[-1]} {part}"
+        else:
+            sentences.append(part)
+
+    return sentences
 
 # Accept `[C-foo_bar]` or `[foo_bar]` **inside square brackets only**
-_CIT_RE = re.compile(r"\[(?:C-)?([\w\-]+)\]")
+_CIT_RE = re.compile(r"(?:\[|【)C-([^】\]]+)(?:\]|】)", re.IGNORECASE)
 
+# Helper: fuzzy resolve citation IDs by normalising zero‑padding and dash/underscore
+def _fuzzy_resolve(cid: str, id_map: dict[str, int]) -> int | None:
+    """
+    Return the embedding‑index for `cid`, tolerating:
+        • zero‑padding differences  (page 02  → 2)
+        • dash ↔ underscore swaps   (file-name → file_name)
+    """
+    alt = cid.replace("-", "_")
+    # Drop leading zeros within each numeric segment
+    alt = "_".join(re.sub(r"^0+(\d)", r"\1", part) for part in alt.split("_"))
+    # Further normalise: drop any remaining non‑alphanumeric chars, squeeze repeats, trim
+    alt = re.sub(r"[^a-z0-9]+", "_", alt)
+    alt = re.sub(r"_+", "_", alt).strip("_")
+    return id_map.get(alt)
 
 def make_flags(
     sentences: List[str],
@@ -177,18 +209,44 @@ def make_flags(
     chunk_vecs: np.ndarray,
     threshold: float = 0.85,
 ) -> List[Tuple[float, str, List[str]]]:
-    flags = []
+    """
+    Return a list of drift flags.
+
+    • If a sentence has **no citation tags** → similarity is set to 0.0 and it is flagged.
+    • If citation tags are present but **none resolve** to a chunk → similarity 0.0 and flagged.
+    • If at least one valid citation resolves, use cosine‑similarity and flag when below `threshold`.
+    """
+    flags: List[Tuple[float, str, List[str]]] = []
+
     for s in sentences:
+        # Collect citation IDs (case‑insensitive)
         src_ids = [x.lower() for x in _CIT_RE.findall(s)]
-        idxs = [id_to_idx.get(cid) for cid in src_ids if cid in id_to_idx]
-        if not idxs:
+        idxs = []
+        for cid in src_ids:
+            if cid in id_to_idx:
+                idxs.append(id_to_idx[cid])
+            else:
+                alt_idx = _fuzzy_resolve(cid, id_to_idx)
+                if alt_idx is not None:
+                    idxs.append(alt_idx)
+
+        # Case 1: No citations at all
+        if not src_ids:
+            flags.append((0.0, s, []))
             continue
+
+        # Case 2: Citation(s) present but none matched the corpus
+        if not idxs:
+            flags.append((0.0, s, src_ids))
+            continue
+
+        # Case 3: Normal similarity check
         s_vec = ai.embed(s)  # (D,)
         worst = min(1 - cosine(s_vec, chunk_vecs[i]) for i in idxs)
         if worst < threshold:
             flags.append((round(float(worst), 4), s, src_ids))
-    return flags
 
+    return flags
 
 # ---------------------------------------------------------------------------#
 #                     Helper – expand directories to files                   #
@@ -217,7 +275,7 @@ def main() -> None:
     p.add_argument("--draft", type=Path, help="Path to draft file (PDF, DOCX, or MD) for drift flagging")
     p.add_argument("--out-dir", type=Path, default=Path("."), help="Output directory")
     p.add_argument("--chunk-tokens", type=int, default=400, help="Tokens per chunk")
-    p.add_argument("--threshold", type=float, default=0.85, help="Cosine sim threshold")
+    p.add_argument("--threshold", type=float, default=0.4, help="Cosine similarity threshold")
     args = p.parse_args()
 
     # Expand any directories into actual file paths
@@ -229,7 +287,7 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print("📝 Extracting text …")
-    raw = extract_text(file_paths)
+    _ = extract_text(file_paths)  # We don’t need the combined text anymore
 
     print("✂️  Chunking text …")
     all_chunks: List[str] = []
@@ -259,7 +317,6 @@ def main() -> None:
         print(f"   {len(flags)} potential drift flags written to {flags_path}")
 
     print("✅ Done.")
-
 
 if __name__ == "__main__":
     main()

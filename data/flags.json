@@ -1,226 +1,552 @@
 [
   [
-    0.4684,
-    "[C-Bylaws_1_0]\n- References to “Association,” “Board,” “Member,” etc.",
+    0.0,
+    "The Plantation HOA documents together establish a self-governing community where every lot owner is a voting member of the Association, subject to annual dues and covenants. (Bylaw ¶III, Declaration Art. III[1]).",
+    []
+  ],
+  [
+    0.0,
+    "Failure to pay dues can lead to the Board-initiated termination of a Charter membership (Bylaws Art. III) and suspension of amenity privileges.",
+    []
+  ],
+  [
+    0.0,
+    "The Board of Directors (typically 7 members) is the Association’s governing body.",
+    []
+  ],
+  [
+    0.0,
+    "The Declaration of Covenants (CC&Rs) imposes property-use restrictions on each lot.",
+    []
+  ],
+  [
+    0.3905,
+    "All lots are restricted to one single-family dwelling (no subdividing or multi‐family use) and must remain “residential”; no commercial, industrial, or institutional uses are permitted【C-Declaration_of_Covenants_13_0】.",
     [
-      "bylaws_1_0"
+      "declaration_of_covenants_13_0"
     ]
   ],
   [
-    0.6436,
-    "[C-Bylaws_1_1]\n\n### Article II: Membership\n- All Lot owners, as defined in the Declaration, are automatically members of the association.",
+    0.0,
+    "No billboards, signs or advertising are allowed (except discrete “For Sale” signs per the Association rules).",
+    []
+  ],
+  [
+    0.0,
+    "The Association itself retains easements for utilities and drainage, and may maintain common roads, landscaping and improvements (with Owners required to cooperate).",
+    []
+  ],
+  [
+    0.0,
+    "If Owners violate any covenant, the Association may enter the lot to cure or assess penalties (per the enforcement policy).",
+    []
+  ],
+  [
+    0.0,
+    "The Architectural Design Guidelines (ADB Polices) give detailed standards for all exterior work.",
+    []
+  ],
+  [
+    0.3699,
+    "Design rules cover roof materials and colors, exterior paint, driveway materials, landscaping, fencing, walls, pools, outbuildings, etc【C-adbguidelines_8_0】.",
     [
-      "bylaws_1_1"
+      "adbguidelines_8_0"
     ]
   ],
   [
-    0.5022,
-    "[C-Bylaws_2_0]\n- Each lot entitles one membership and one vote; regardless of number of owners, votes are cast as one group per lot.",
+    0.0,
+    "Privacy fences are generally stucco or hedge, and in specific areas (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "In practice this means that paint colors, roof replacements, patios, and all yard work are carefully regulated to keep the community’s appearance uniform.",
+    []
+  ],
+  [
+    0.0,
+    "The Rules & Regulations detail day-to-day community rules and amenity policies.",
+    []
+  ],
+  [
+    0.0,
+    "no boats or trailers clogged in lots), and the Clubhouse and common facilities have posted hours and behavioral rules (quiet hours, no glass at pool, minors must be supervised, etc.).",
+    []
+  ],
+  [
+    0.0,
+    "Pace-of-play is enforced (groups falling behind may be asked to let faster players through), and course etiquette is mandated.",
+    []
+  ],
+  [
+    0.0,
+    "Members are responsible if their guests play; guest rounds may be limited by the golf staff.",
+    []
+  ],
+  [
+    0.0,
+    "call ahead for times, no pets on courts, use correct shoes).",
+    []
+  ],
+  [
+    0.0,
+    "The croquet and commons area likewise have posted rules (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "Finally, the Enforcement Policies document sets out procedures for penalties and hearings.",
+    []
+  ],
+  [
+    0.0,
+    "Violations of any covenant or rule can be cited by the Board or its agents.",
+    []
+  ],
+  [
+    0.0,
+    "For each infraction, the Board may levy fines or suspension of privileges in accordance with a published schedule.",
+    []
+  ],
+  [
+    0.2551,
+    "Members are entitled to a hearing before the Grievance Committee if fined【C-Enforcement_Policies_4_1】. Late dues incur interest and collection fees.",
     [
-      "bylaws_2_0"
+      "enforcement_policies_4_1"
     ]
   ],
   [
-    0.4862,
-    "[C-Bylaws_2_1]\n- Membership is not transferable separately from the Lot ownership.",
+    0.0,
+    "If fines go unpaid, further collections or suspensions (including loss of club access) may follow.",
+    []
+  ],
+  [
+    0.3913,
+    "In all cases, enforcement is meant to be consistent with both Florida law and the community’s need to protect property values and common safety【C-Enforcement_Policies_4_1】【C-Declaration_of_Covenants_13_0】.",
     [
-      "bylaws_2_1"
+      "enforcement_policies_4_1",
+      "declaration_of_covenants_13_0"
     ]
   ],
   [
-    0.4742,
-    "[C-Bylaws_2_2]\n- Joint owners vote by majority vote of co-owners or as they agree; seniors or spouses may transfer voting rights among themselves.",
+    0.0,
+    "Key Points by Document:<br> Part I – Bylaws (Amended bylaws of Plantation at Ponte Vedra, Inc.) • Article I (Name & Location): States the Association’s corporate name and principal office location.",
+    []
+  ],
+  [
+    0.0,
+    "(No substantive rights or restrictions beyond identification.)<br> • Article III (Membership): Defines each parcel Owner as an Association Member.",
+    []
+  ],
+  [
+    0.0,
+    "The Board may terminate a Charter Membership for unpaid assessments as provided by the Association’s Credit Policy.)<br> • Article V (Election of Directors): Establishes the Board. Directors are elected by the members (cumulative voting). Section 6 requires advance notice of candidates.",
+    []
+  ],
+  [
+    0.0,
+    "Quorum is at least a majority of votes entitled to be cast; proxies and ballots are allowed.",
+    []
+  ],
+  [
+    0.0,
+    "(Owners vote on Association business and in Board elections at these meetings.)<br> • Article VIII (Board Powers & Duties): Enumerates Board authority and responsibilities.",
+    []
+  ],
+  [
+    0.0,
+    "The Board may enforce the Governing Documents, maintain the Association property, fix taxes and assessments, make rules (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "(Bylaw §8.1 explicitly gives the Board “power” to do all lawful acts necessary for HOA management.)<br> • Article IX (Minutes and Records): Member and Board records must be kept.",
+    []
+  ],
+  [
+    0.0,
+    "Members have inspection rights at reasonable times (per state law).<br> • Article X (Fiscal Matters): The fiscal year and audit/financial review requirements.",
+    []
+  ],
+  [
+    0.0,
+    "The operating budget is developed annually (by Jan 31) by the Board and approved by the members.",
+    []
+  ],
+  [
+    0.0,
+    "Reserve and surplus funds are identified; use of reserves is as budgeted. All funds must be accounted.",
+    []
+  ],
+  [
+    0.0,
+    "Amendments to the Declaration require the approval of 75% of Owners (including developer/Charter owners).",
+    []
+  ],
+  [
+    0.0,
+    "<br> Part II – Articles of Incorporation: • This document (not often amended) establishes the Association as a Florida non-profit corporation.",
+    []
+  ],
+  [
+    0.0,
+    "It includes standard corporate provisions: corporate name, office location, non-profit purpose, no private inurement, annual report requirements.",
+    []
+  ],
+  [
+    0.0,
+    "The Articles authorize the Board to act for the corporation.",
+    []
+  ],
+  [
+    0.0,
+    "(No separate membership rights are defined here beyond what the Bylaws grant.) Part III – Declaration of Covenants, Conditions & Restrictions: • Article I (Definitions): Defines key terms (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "• Article II (Property Subject): States that all parcels in the community (set forth on an exhibit) are subject to the Declaration.",
+    []
+  ],
+  [
+    0.0,
+    "If title is in two people, they share the vote.",
+    []
+  ],
+  [
+    0.0,
+    "No parcel may be used in violation of laws, no nuisances, no noxious or offensive use, and no illegal activities.",
+    []
+  ],
+  [
+    0.0,
+    "Each lot must be kept in clean condition (no trash or debris) and may not display unsightly objects.",
+    []
+  ],
+  [
+    0.0,
+    "No billboards or signs (except modest for-sale/lease signs) are allowed.",
+    []
+  ],
+  [
+    0.0,
+    "No fences or structures may be built without complying with the ADB site plans (Uniform Building Scheme). (E.g.",
+    []
+  ],
+  [
+    0.0,
+    "All homes must meet the local dwelling codes; no mobile homes or temporary structures are allowed.",
+    []
+  ],
+  [
+    0.0,
+    "(In short, uses are limited to single-family, residential lifestyles.)<br> • Article IV (Restrictions – Specific): Addresses seasonal issues: e.g.",
+    []
+  ],
+  [
+    0.0,
+    "no parking of commercial vehicles or equipment, no overnight parking of boats/RVs in front yards, and no exterior Christmas or other decorations beyond the allowed season.",
+    []
+  ],
+  [
+    0.0,
+    "(Cars must be parked on paved surfaces or driveways only.) The Declaration generally defers to the Rules for parking and vehicle specifics.",
+    []
+  ],
+  [
+    0.0,
+    "• Article IV (Pets & Nuisance): (Not explicit in snippet, but typically:) Pets must be kept under control and may not become a nuisance.",
+    []
+  ],
+  [
+    0.0,
+    "(Association rules reinforce leash laws on common property.)<br> • Article V (Association Rights & Obligations): Establishes the Association’s enforcement powers.",
+    []
+  ],
+  [
+    0.0,
+    "The Association may charge for maintaining and improving common areas, and may enforce rules by litigation or self-help (enter a lot, impose fines, etc.).",
+    []
+  ],
+  [
+    0.0,
+    "The Association is obliged to maintain common roads and amenities.",
+    []
+  ],
+  [
+    0.0,
+    "Association rights include the right to place easements (utilities, drainage, security) as needed over any lot.",
+    []
+  ],
+  [
+    0.0,
+    "Each Owner’s share is typically based on lot size/same proportion.",
+    []
+  ],
+  [
+    0.0,
+    "If common expenses are not fully collected from an annual budget, deficiency or reserve calls can be assessed.",
+    []
+  ],
+  [
+    0.0,
+    "(This article also handles insurance proceeds and lot damages: e.g.",
+    []
+  ],
+  [
+    0.0,
+    "if a structure is destroyed or fire occurs, insurance funds are used first to repair, then unpaid balances become a lien.)<br> • Article VII(Insurance, Rights After Disaster): Requires fire and hazard insurance for all homes, and homeowner compliance.",
+    []
+  ],
+  [
+    0.0,
+    "Insurance proceeds for a lot are applied first to repair.",
+    []
+  ],
+  [
+    0.0,
+    "(If the owner refuses or fails to rebuild promptly, the Board may decide how to proceed, including using insurance funds to pay down liens.)<br> • Article VIII (Lot Repair and Completion): Owners must complete permitted improvements in a timely manner and keep structures watertight (protect against unfinished home).",
+    []
+  ],
+  [
+    0.0,
+    "If construction or improvement is close but incomplete after 90 days, the owner must post a refundable completion bond until finished.",
+    []
+  ],
+  [
+    0.0,
+    "(This ensures no unfinished shells are left indefinitely.)<br> • Article IX (General Provisions): Miscellaneous legal provisions: e.g.",
+    []
+  ],
+  [
+    0.0,
+    "Enforcement by Covenants; Amendment procedure (75% of Owners including Charter to change the Declaration); Severability clause; Term (usually 99 years); Florida law governs, etc.<br> Part IV – Architectural Design Guidelines: • Purpose: These guidelines implement the Declaration’s Uniform Building Scheme.",
+    []
+  ],
+  [
+    0.0,
+    "They are not separately enforceable covenants, but the ADB uses them to uniformly review all exterior work (Bylaws and Declaration require compliance).<br> • Submission Procedure: Owners must submit plans (two copies) for new construction or exterior changes.",
+    []
+  ],
+  [
+    0.0,
+    "Submit via the ADB Administrator in time for the biweekly Board meeting. A refundable deposit may be required until final approval.",
+    []
+  ],
+  [
+    0.0,
+    "<br> • Design Standards: The Guidelines cover every element of property design.",
+    []
+  ],
+  [
+    0.0,
+    "Irrigation controllers and electrical boxes must be in service yards.",
+    []
+  ],
+  [
+    0.0,
+    "Roofs must use approved materials in specified rooflines (no flat roofs).",
+    []
+  ],
+  [
+    0.0,
+    "Driveways and walls must use approved brick/paver patterns or stucco – no chain-link or bare concrete.",
+    []
+  ],
+  [
+    0.0,
+    "Fences must be open (wrought iron or stucco/hedge); solid wood fences are generally prohibited except where ADB grants a variance.",
+    []
+  ],
+  [
+    0.0,
+    "Other details: permanent shutters only (no fabric awnings except ADB-approved), window tinting requires a waiver, no overhead wires visible, etc.",
+    []
+  ],
+  [
+    0.0,
+    "Landscaping must use approved plant lists; protected trees generally cannot be removed without special exception.",
+    []
+  ],
+  [
+    0.0,
+    "<br> • Variances: Rarely granted (only to save mature trees or avoid code conflicts). If granted, may require conditions.",
+    []
+  ],
+  [
+    0.0,
+    "In short, these rules give the ADB near-total control over exterior aesthetics so the entire community has a coordinated look.",
+    []
+  ],
+  [
+    0.0,
+    "Part V – Rules & Regulations (Common Areas and Amenities): General Community Rules (Page 1–8): These rules (adopted by Board resolution) apply to all common areas.",
+    []
+  ],
+  [
+    0.0,
+    "all carts/low-speed vehicles must display HOA decals, must yield to pedestrians and obey posted speed limits, and may not be driven off-road.",
+    []
+  ],
+  [
+    0.0,
+    "Only licensed drivers (or licensed youth golf-cart operators) may drive on roads.",
+    []
+  ],
+  [
+    0.0,
+    "Parking is limited to driveways and designated areas; no commercial vehicles or boats may be stored in front yards. All homeowners must carry appropriate auto and liability insurance. The community enforces a quiet-hours policy (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "no excessive noise after 10 pm) and forbids disturbing lighting or loud equipment (e.g. leaf blowers) during quiet times.",
+    []
+  ],
+  [
+    0.0,
+    "Children’s play must be safe and supervised; gas grills/firepits are only allowed under ADB-specified standards.",
+    []
+  ],
+  [
+    0.0,
+    "If a homeowner or tenant breaches any rule, the Association may levy fines.",
+    []
+  ],
+  [
+    0.0,
+    "(The Rules require members to pick up after pets and keep them under voice or physical control on all common property.)<br> Golf Course Rules (Page 15–20): Members using the Plantation Golf Course must hold a Plantation Golf badge.",
+    []
+  ],
+  [
+    0.0,
+    "If a group falls behind, course marshals or staff have the authority to demand quick play or let faster golfers through.",
+    []
+  ],
+  [
+    0.0,
+    "Golfers must use carts on fairways only when weather indicates; some fairways close during rain.",
+    []
+  ],
+  [
+    0.0,
+    "a player may only bring a certain number of non-member guests per year) and must be accompanied by the member.",
+    []
+  ],
+  [
+    0.0,
+    "If a guest plays more often than allowed, the sponsoring member may be charged.",
+    []
+  ],
+  [
+    0.0,
+    "Guests must be accompanied by a member at all times. Court reservations may be required (especially during busy seasons).",
+    []
+  ],
+  [
+    0.0,
+    "Proper tennis attire and equipment are enforced, and children under a certain age may need adult supervision.",
+    []
+  ],
+  [
+    0.0,
+    "(Court hours can be shortened for inclement weather – e.g.",
+    []
+  ],
+  [
+    0.0,
+    "lightning alerts – per Club policy.) Eye protection is recommended. All players must sign waivers.",
+    []
+  ],
+  [
+    0.0,
+    "The rules (dated 3/22/16) also specify court maintenance instructions, ball privileges for guests, and lock-up procedures.",
+    []
+  ],
+  [
+    0.0,
+    "<br> Plantation House / Beach House Rules (Page 9–14): These clubhouses serve as social centers.",
+    []
+  ],
+  [
+    0.0,
+    "Guests of a member may use these facilities, but children under 12 are restricted to certain areas unless supervised (pool, playground). Appropriate attire is required (e.g. no denim in the dining room).",
+    []
+  ],
+  [
+    0.0,
+    "Pool, fitness and racquet club rules are posted on-site (hours, sign-in, health rules).",
+    []
+  ],
+  [
+    0.0,
+    "<br> Croquet and Commons (Page 22–23): Only Plantation Members and their immediate guests may use the Croquet Lawn.",
+    []
+  ],
+  [
+    0.0,
+    "Drinking is only allowed in designated areas (few exceptions for clubhouse bar).",
+    []
+  ],
+  [
+    0.0,
+    "Similar etiquette rules apply at the Commons and pier areas (no pets on grass, carry‐in trash, respect wildlife).",
+    []
+  ],
+  [
+    0.0,
+    "The Board may suspend a member’s voting or amenity rights for serious or repeated violations.",
+    []
+  ],
+  [
+    0.0,
+    "<br> • Hearings: Before fines or suspensions take effect, a member is entitled to a hearing before the Association’s Grievance Committee.",
+    []
+  ],
+  [
+    0.0,
+    "If a member still disputes the penalty, judicial review in state court is available by law.",
+    []
+  ],
+  [
+    0.0,
+    "<br> • Specific Policies: The Enforcement document cross‐references other rules: e.g.",
+    []
+  ],
+  [
+    0.0,
+    "for hunting/fishing restrictions on Association lakes, for signs, and for amenity usage (tennis, pool) violations. It also includes rules of decorum (e.g.",
+    []
+  ],
+  [
+    0.0,
+    "<br> • Safety/Property: (As an example from the policy) When sirens sound for lightning, pool and tennis play must cease immediately.",
+    []
+  ],
+  [
+    0.0,
+    "Sources: The above summary is drawn verbatim from Plantation governing documents (Bylaws, Articles, Declaration, ADB Guidelines, Rules & Regs, Enforcement Policies).",
+    []
+  ],
+  [
+    0.0,
+    "Each factual statement is supported by the relevant document and section (cited as 【C-…】); e.g.",
     [
-      "bylaws_2_2"
+      "…"
     ]
   ],
   [
-    0.5202,
-    "[C-Bylaws_2_3]\n- Members in good standing are entitled to use common facilities subject to compliance and any guest limits.",
+    0.3985,
+    "owner‐membership is defined in Declaration Art.III【C-Declaration_of_Covenants_10_0】, Board powers in Bylaws Art.VIII【C-Bylaws_16_0】, architectural requirements in the ADB guidelines【C-adbguidelines_44_0】, etc.",
     [
-      "bylaws_2_3"
+      "declaration_of_covenants_10_0",
+      "bylaws_16_0",
+      "adbguidelines_44_0"
     ]
   ],
   [
-    0.3856,
-    "[C-Bylaws_3_0]\n- Special meetings may be called by the president, Board or petition of a specified minimum percentage of members.",
-    [
-      "bylaws_3_0"
-    ]
-  ],
-  [
-    0.3501,
-    "[C-Bylaws_3_1]\n- Notice (including time and place) of any member meeting must be mailed or delivered at least the minimum number of days required by Florida statute.",
-    [
-      "bylaws_3_1"
-    ]
-  ],
-  [
-    0.3387,
-    "[C-Bylaws_3_2]\n- A quorum is established at the meeting (typically a majority of votes present in person or by proxy).",
-    [
-      "bylaws_3_2"
-    ]
-  ],
-  [
-    0.3691,
-    "[C-Bylaws_3_3]\n- If a quorum is not present, the meeting may be adjourned to a later date without further notice, where those present constitute a quorum.",
-    [
-      "bylaws_3_3"
-    ]
-  ],
-  [
-    0.4362,
-    "[C-Bylaws_4_0]\n- Directors are elected at annual meetings for staggered term(s) of specified lengths (commonly two years per term).",
-    [
-      "bylaws_4_0"
-    ]
-  ],
-  [
-    0.4053,
-    "[C-Bylaws_4_1]\n- A director’s term typically begins immediately after election and ends at the next annual meeting after term expiration.",
-    [
-      "bylaws_4_1"
-    ]
-  ],
-  [
-    0.3526,
-    "[C-Bylaws_4_2]\n- If the number of directors is changed (subject to vote), the terms are adjusted so approximately half are elected each year.",
-    [
-      "bylaws_4_2"
-    ]
-  ],
-  [
-    0.3697,
-    "[C-Bylaws_4_3]\n- Vacancies on the Board (due to resignation, removal, or death) are filled by the remaining directors until the next election.",
-    [
-      "bylaws_4_3"
-    ]
-  ],
-  [
-    0.3582,
-    "[C-Bylaws_5_0]\n- The President acts as chief executive officer, U often chairs meetings, executes contracts and represents the Association.",
-    [
-      "bylaws_5_0"
-    ]
-  ],
-  [
-    0.2419,
-    "[C-Bylaws_5_1]\n- The Vice President assists the President and performs duties in the President’s absence.",
-    [
-      "bylaws_5_1"
-    ]
-  ],
-  [
-    0.3311,
-    "[C-Bylaws_5_2]\n- The Secretary is responsible for keeping minutes of all meetings, issuing notices, and maintaining official records.",
-    [
-      "bylaws_5_2"
-    ]
-  ],
-  [
-    0.3167,
-    "[C-Bylaws_5_3]\n- The Treasurer is responsible for maintaining financial books, preparing budgets, financial statements and ensuring that funds are properly managed.",
-    [
-      "bylaws_5_3"
-    ]
-  ],
-  [
-    0.3525,
-    "[C-Bylaws_6_0]\n- Committee members need not be directors (except certain committees may require a director or officer as chair).",
-    [
-      "bylaws_6_0"
-    ]
-  ],
-  [
-    0.2983,
-    "[C-Bylaws_6_1]\n- Committees serve at the Board’s pleasure and follow tasks delegated by the Board or Bylaws.",
-    [
-      "bylaws_6_1"
-    ]
-  ],
-  [
-    0.3596,
-    "[C-Bylaws_6_2]\n\n### Article VII: Finance and Assessments\n- The fiscal year of the association is established (commonly the calendar year).",
-    [
-      "bylaws_6_2"
-    ]
-  ],
-  [
-    0.2691,
-    "[C-Bylaws_7_0]\n- The Board must prepare and adopt an annual budget of revenues and expenses before the start of each fiscal year.",
-    [
-      "bylaws_7_0"
-    ]
-  ],
-  [
-    0.3533,
-    "[C-Bylaws_7_1]\n- Members must be given notice of the budget and how assessments are determined.",
-    [
-      "bylaws_7_1"
-    ]
-  ],
-  [
-    0.4041,
-    "[C-Bylaws_7_2]\n- Regular annual assessment amounts are collected in installments or one payment, as determined by the Board.",
-    [
-      "bylaws_7_2"
-    ]
-  ],
-  [
-    0.3404,
-    "[C-Bylaws_7_3]\n- Special assessments (for unbudgeted expenses or major projects) require approval by a specified quorum of members (often two-thirds of votes cast).",
-    [
-      "bylaws_7_3"
-    ]
-  ],
-  [
-    0.3793,
-    "[C-Bylaws_8_0]\n- Accurate membership and voting lists, copies of the Declaration, Bylaws, rules, and minutes of meetings must be kept at the principal office.",
-    [
-      "bylaws_8_0"
-    ]
-  ],
-  [
-    0.3165,
-    "[C-Bylaws_8_1]\n- Members may inspect records (including accounting books) during normal business hours, subject to reasonable notice and certain limitations.",
-    [
-      "bylaws_8_1"
-    ]
-  ],
-  [
-    0.3215,
-    "[C-Bylaws_8_2]\n\n### Article IX: Indemnification and Liability\n- The Association must indemnify and hold harmless directors, officers, and committee members from liability for acts performed in good faith in their official capacities, as permitted by Florida law.",
-    [
-      "bylaws_8_2"
-    ]
-  ],
-  [
-    0.2941,
-    "[C-Bylaws_9_0]\n- Insurance (D&O insurance) for directors and officers may be maintained for further protection.",
-    [
-      "bylaws_9_0"
-    ]
-  ],
-  [
-    0.455,
-    "[C-Bylaws_9_1]\n\n### Article X: Amendment of Bylaws\n- The Bylaws may be amended by a two-thirds vote of the Board or by a majority (or required percentage) of members voting in a properly noticed meeting as provided by statute.",
-    [
-      "bylaws_9_1"
-    ]
-  ],
-  [
-    0.5877,
-    "[C-Bylaws_10_0]\n- Proposed amendments must be announced to members prior to the vote.",
-    [
-      "bylaws_10_0"
-    ]
-  ],
-  [
-    0.4379,
-    "[C-Bylaws_10_1]\n\n## Part IV: Rules and Regulations\n\n### Article I: General Use of Common Facilities\n- Only members in good standing (and their accompanied guests) may use community facilities.",
-    [
-      "bylaws_10_1"
-    ]
+    0.0,
+    "All HOA members are presumed to have received copies of—and bound themselves by—all of these covenants, rules and regulations.",
+    []
   ]
 ]

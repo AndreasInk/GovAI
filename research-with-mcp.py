@@ -3,7 +3,7 @@
 research-mcp.py – Kick‑off a Deep‑Research job against the HOA MCP server
 ========================================================================
 
-This script invokes **o4-mini-deep-research** to generate a ≤50‑page
+This script invokes **o3-deep-research** to generate a ≤50‑page
 consolidated summary of all HOA governing documents served by our
 `doc-mcp.py` instance.
 
@@ -41,58 +41,107 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from openai import OpenAI
 
 MODEL = "o4-mini-deep-research"
 MCP_LABEL = "hoa_docs"
-MCP_URL = os.getenv("HOA_MCP_URL", "https://0d9cfd389bc5.ngrok-free.app/mcp")
+MCP_URL = os.getenv("HOA_MCP_URL", "https://cdcd024ac046.ngrok-free.app/mcp")
 OUT_FILE = Path("draft.md")
+
+# Standard 4‑part breakdown inspired by the consolidated master document
+DEFAULT_TOPICS: list[str] = [
+    "Foundational Documents",          # Part I
+    "Community‑Wide Rules",            # Part II
+    "Amenities & Facilities",          # Part III
+    "Governance & Enforcement",        # Part IV
+]
 
 # ---------------------------------------------------------------------------#
 # Deep‑research prompt                                                       #
 # ---------------------------------------------------------------------------#
 PROMPT = """
-Document Consolidation Outline – The Plantation at Ponte Vedra Beach
-===================================================================
+## Role
+You are the **Plantation HOA Deep‑Research Analyst**.  
+Your job is to condense the ≈ 500‑page HOA governing‑document corpus (in `/docs`) into a single **30 – 40 page equivalent** and return the result as a machine‑friendly JSON object.
 
-You have full access to the **hoa_docs** MCP, which contains every governing
-PDF (articles, bylaws, declaration, rules, enforcement & financial policies).
-
+---
 ### Task
-1. Write a concise **Executive Summary** (≤ 600 words, narrative paragraphs)
-   capturing the core themes, rights, duties, and restrictions across all
-   governing documents.
+1. Use the MCP **search** tool to discover which documents exist. Start broad (`bylaws`, `declaration`, `rules`, `enforcement`, `policies`) and then refine with context terms (`parking`, `pets`, `guest`, etc.).
+2. Write an **executive_summary** (≤ 600 words, narrative paragraphs) that captures the core themes, rights, duties, restrictions, and enforcement mechanisms across everything you fetched.
+3. Build a sections array with **≥ 150 entries** (roughly 4-5 per 30-40 pages).:  
+   • `source_document` (string) PDF file name  
+   • `source_page`  (int)  page number inside that PDF  
+   • `source_text`  (string) verbatim clause or paragraph you fetched  
+   • `summary_text`  (string) one‑sentence paraphrase of the clause
+4. Order the array roughly by document hierarchy (Bylaws → CC&Rs → Rules → Policies).
 
-2. Follow the summary with a **three‑level Markdown OUTLINE** –
-   *Part › Article › Section* – that captures **every distinct right,
-   obligation, power, restriction, or procedure**.  Each leaf bullet
-   ≤ 25 words.
+---
+### Required JSON Output (format)
+```jsonc
+{
+  "executive_summary": "<600‑word narrative …>",
+  "sections": [
+    {
+      "source_document": "Bylaws Approved 08.27.2024.pdf",
+      "source_page": 94,
+      "source_text": "§6.3 Suspension of member privileges …",
+      "summary_text": "Board may suspend any membership privilege after 30‑day delinquency."
+    }
+    // …more entries…
+  ]
+}
+```
 
-Your deliverable should be **comprehensive** — aim for **≈ 25–30 pages
-(~12 000–15 000 words)** when rendered, which typically means **300–400 leaf
-bullets** after the executive summary.
-
-### Citation requirement
-After **every** leaf bullet append the stable chunk ID you fetched, e.g.:
-
-    • Suspension of member privileges after 30‑day delinquency. [C-Rules_Regulations_10_0]
-
-If a sentence summarises multiple chunks, list each token:
-`[C-Bylaws_4_2][C-Bylaws_4_3]`.
-
-### Scope
-Include: Articles of Incorporation, Declaration of Covenants, Bylaws, all
-facility‑specific rules, enforcement & financial policies.  Omit cover pages,
-signature blocks, notarisation seals.
-
-### Guidelines
-* Quote verbatim where nuance matters (stay within the 25‑word bullet limit).
-* **Do not** perform any external web research.
-* Return only the **executive summary + outline** Markdown — no extra commentary, no appendix.
+---
+### Important Rules
+* **Every** fact in `summary_text` must be supported by the corresponding `source_text`.
+* Internal stable chunk IDs are **not** required; the metadata above suffices.
+* Quote brittle language verbatim in `source_text` to preserve nuance.
+* Fetch only what you intend to cite—avoid unnecessary tool calls.
+* No external web research; answer strictly from fetched chunks.
+* If a relevant document is truly missing, mention that in `executive_summary`.
+* Keep `summary_text` concise (≈ 1 sentence) so downstream embeddings can measure similarity against `source_text`.
 """
 
+KICKOFF_PROMPT = """
+### HOA Deep‑Research Kickoff
+
+The Plantation at Ponte Vedra Beach is an **equity residential community** in Ponte Vedra Beach, Florida.  
+Home ownership automatically includes membership to a championship golf course, private beach club, tennis & pickleball center, croquet lawns, fitness center, and a clubhouse offering dining and social events.
+
+We are consolidating **20 + governing documents** into one master reference for easier member access and navigation.
+
+**Current document families**
+• Foundational documents – Articles of Incorporation, Bylaws, Declaration of Covenants  
+• Facility‑specific rules – golf, tennis, racquet sports, croquet, fitness center, clubhouse, beach house  
+• Policy manuals – organizational, financial, architectural design, covenant enforcement  
+• Committee charters and other governance docs  
+
+---
+**Goal**: produce the JSON digest (executive_summary + sections) described in the main prompt.
+
+**Steps**
+1. Run broad **search** queries (`bylaws`, `declaration`, `rules`, `policies`, `enforcement`).
+2. Refine with context words (`parking`, `pets`, `guest`, etc.) and **fetch** only the chunks you plan to cite.
+3. Assemble the required JSON output.
+
+**Search cheat‑sheet**
+
+*Foundational* `bylaws`, `articles`, `declaration`, `covenants`, `CC&Rs`  
+*Governance* `board`, `committee charter`, `quorum`, `voting`  
+*Money* `assessment`, `dues`, `fee schedule`, `fine`, `lien`, `delinquency`  
+*Amenities* `golf`, `tennis`, `pickleball`, `croquet`, `beach house`, `fitness`, `clubhouse`  
+*Property use* `architectural`, `construction`, `renovation`, `landscaping`, `signage`, `noise`, `pets`, `parking`, `guest`  
+*Enforcement* `violation`, `notice`, `hearing`, `suspension`, `sanction`  
+
+> Combine broad + specific terms, e.g. `golf guest`, `architectural tree removal`, or `assessment late fee`.  
+
+Use only the `hoa-docs-mcp` tools (`search`, `fetch`). No external web.
+"""
 
 # ---------------------------------------------------------------------------#
 # Helper – wait for job completion                                           #
@@ -109,6 +158,53 @@ def _poll_job(client: OpenAI, job_id: str, every_sec: int = 15) -> str:
 
 
 # ---------------------------------------------------------------------------#
+# Helper – kick off a single topic‑focused job                               #
+# ---------------------------------------------------------------------------#
+def _run_topic(topic: str, wait: bool, out_dir: Path = Path(".")) -> None:
+    """
+    Launch a deep‑research job constrained to a specific TOPIC (e.g. 'parking',
+    'pets', 'amenities') and, if wait=True, write its JSON result to
+    draft-<topic>.json.
+    """
+    client = OpenAI(timeout=3600)
+
+    instructions_text = PROMPT.strip() + (
+        "\n\n---\n### Topic Focus\n"
+        f"Only research clauses, rules, fees, and policies relevant to the topic: **{topic}**.\n"
+        "Ignore unrelated parts of the corpus.\n"
+    )
+
+    resp = client.responses.create(
+        model=MODEL,
+        reasoning={"summary": "auto"},
+        max_tool_calls=200,
+        instructions=instructions_text,
+        input=KICKOFF_PROMPT.strip(),
+        tools=[
+            {
+                "type": "mcp",
+                "server_label": MCP_LABEL,
+                "server_url": MCP_URL,
+                "require_approval": "never",
+            }
+        ],
+    )
+
+    job_id = resp.id
+    print(f"🏷️  Topic '{topic}' ➜ Job {job_id}")
+
+    if not wait:
+        return
+
+    output = _poll_job(client, job_id)
+    import re
+    safe_topic = re.sub(r"\\W+", "_", topic.lower())
+    out_path = out_dir / f"draft-{safe_topic}.json"
+    out_path.write_text(output)
+    print(f"✅ Topic '{topic}' saved to {out_path}")
+
+
+# ---------------------------------------------------------------------------#
 # Main                                                                       #
 # ---------------------------------------------------------------------------#
 def main(wait: bool = False, out: Optional[Path] = None) -> None:
@@ -119,7 +215,8 @@ def main(wait: bool = False, out: Optional[Path] = None) -> None:
         model=MODEL,
         reasoning={"summary": "auto"},
         max_tool_calls=200,
-        input=PROMPT.strip(),
+        instructions=PROMPT.strip(),
+        input=KICKOFF_PROMPT.strip(),
         tools=[
             {
                 "type": "mcp",
@@ -159,5 +256,43 @@ if __name__ == "__main__":
         default=None,
         help="Custom output markdown file (requires --wait)",
     )
+    parser.add_argument(
+        "--std-chunks",
+        "--parts",
+        dest="std_chunks",
+        action="store_true",
+        help="Kick off the standard 4 part‑based research chunks (Foundational, Rules, Amenities, Governance)"
+    )
+    parser.add_argument(
+        "--topics",
+        help="Comma‑separated list of custom research topics to fan‑out in parallel. "
+             "Use --std-chunks to run the 4 standard parts instead."
+    )
     args = parser.parse_args()
+    # Determine fan‑out topics from CLI options
+    topics_param = getattr(args, "topics", None)
+    topics: list[str] | None = None
+    if topics_param:
+        topics = [t.strip() for t in topics_param.split(",") if t.strip()]
+    elif getattr(args, "std_chunks", False):
+        topics = DEFAULT_TOPICS.copy()
+
+    if topics:
+        if not topics:
+            print("⚠️  No valid topics parsed.", file=sys.stderr)
+            sys.exit(0)
+
+        max_workers = min(8, len(topics))
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_run_topic, topic, args.wait, Path(".")): topic
+                for topic in topics
+            }
+            for future in as_completed(futures):
+                topic = futures[future]
+                try:
+                    future.result()
+                except Exception as exc:
+                    print(f"❌ Topic '{topic}' errored: {exc}", file=sys.stderr)
+        sys.exit(0)
     main(wait=args.wait, out=args.out)
