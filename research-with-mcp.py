@@ -36,12 +36,11 @@ to `draft.md`, then run the Streamlit drift‑checker to flag issues.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import sys
 import time
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 

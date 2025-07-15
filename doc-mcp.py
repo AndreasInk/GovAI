@@ -47,12 +47,11 @@ Returned search hits follow the Deep‑Research MCP schema:
 """
 from __future__ import annotations
 
-import json
 import re
 import textwrap
 from collections import defaultdict
 from pathlib import Path
-from typing import Generator, List
+from typing import List
 
 import pypdf                           # lightweight PDF text extraction
 
