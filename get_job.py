@@ -16,6 +16,7 @@ def wait_for(job_id: str, sleep_sec: float = 15) -> str:
             raise RuntimeError(f"{job_id} failed")
         time.sleep(sleep_sec)
 
-markdown_report = wait_for("resp_686c69249240819aa6ce274ba6c04f71004e0a045a94812a")
-Path("draft.md").write_text(markdown_report)
+job_id = "resp_6879aa5c05b4819b8dee3e3ea514f22606a9775ba3735112"
+markdown_report = wait_for(job_id)
+Path(f"draft-{job_id}.md").write_text(markdown_report)
 print("Saved to draft.md")
