@@ -23,7 +23,7 @@ import json
 import time
 import re
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict
 
 from scipy.spatial.distance import cosine
 
@@ -38,7 +38,6 @@ from tiktoken import get_encoding           # just for token count display
 # PDF generation
 from fpdf import FPDF
 import io
-import os
 import unicodedata
 
 # ------------------------------------------------------------------

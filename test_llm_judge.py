@@ -7,14 +7,12 @@ This script demonstrates how the LLM judge works for detecting semantic drift
 between summary sentences and their source text.
 """
 
-import json
 from pathlib import Path
 import sys
 
 # Add the current directory to the path so we can import ai
 sys.path.insert(0, str(Path(__file__).parent))
 
-import ai
 
 def test_llm_judge():
     """Test the LLM judge with some example cases."""
@@ -61,16 +59,16 @@ def test_llm_judge():
         from ingest import _llm_judge_drift
         is_drift, confidence, reasoning = _llm_judge_drift(summary, source)
         
-        print(f"🤖 LLM Result:")
+        print("🤖 LLM Result:")
         print(f"  - Drift detected: {is_drift}")
         print(f"  - Confidence: {confidence:.2f}")
         print(f"  - Reasoning: {reasoning}")
         
         # Check if result matches expectation
         if is_drift == expected_drift:
-            print(f"✅ CORRECT - LLM judge matched expectation")
+            print("✅ CORRECT - LLM judge matched expectation")
         else:
-            print(f"❌ INCORRECT - LLM judge disagreed with expectation")
+            print("❌ INCORRECT - LLM judge disagreed with expectation")
         
         print("-" * 50)
 
@@ -104,7 +102,7 @@ def test_with_json_draft():
             
             is_drift, confidence, reasoning = _llm_judge_drift(summary, source)
             
-            print(f"🤖 LLM Result:")
+            print("🤖 LLM Result:")
             print(f"  - Drift detected: {is_drift}")
             print(f"  - Confidence: {confidence:.2f}")
             print(f"  - Reasoning: {reasoning}")
