@@ -137,8 +137,8 @@ def create_or_update_pr(new_content: str, user_name: str = "HOA Reviewer") -> No
 # -------------------------
 # 🌐  Streamlit page config
 # -------------------------
-st.set_page_config(page_title="HOA Drift Checker", page_icon="📜", layout="wide")
-st.title("📜 HOA Document Drift Checker")
+st.set_page_config(page_title="Plantation Governance Report Drift Checker", page_icon="📜", layout="wide")
+st.title("📜 Plantation Governance Report Drift Checker")
 
 st.sidebar.markdown(f"**{len(st.session_state.flags)} flags** loaded · Source chunks: **{len(chunks)}**")
 
@@ -258,294 +258,71 @@ def _to_latin1(text):
     # Remove any remaining non-latin-1 chars
     return unicodedata.normalize('NFKD', text).encode('latin-1', 'ignore').decode('latin-1')
 
-# --------------------------------------------------------------------
-# 🎛️  Main Navigation
-# --------------------------------------------------------------------
-# Sidebar navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio(
-    "Choose a page:",
-    ["Review Flags", "Browse All Chunks", "Search Chunks"],
-    index=0
-)
+ 
 
 # --------------------------------------------------------------------
-# 🚧  Review Flags Page
+# 🚦  Review Drift Flags  (restored standalone viewer)
 # --------------------------------------------------------------------
-if page == "Review Flags":
-    st.header("🚦 Review Drift Flags")
-    
-    # ---------- Optional re-flagging ----------
-    uploaded = st.sidebar.file_uploader("Upload a *new* draft (Markdown)", type=["md", "txt"])
-    if uploaded and st.sidebar.button("🔄 Re‑run flagging"):
-        draft_bytes = uploaded.read()
-        draft_text = draft_bytes.decode("utf-8", errors="ignore")
-        with st.spinner("Computing new flags …"):
-            st.session_state.flags = _make_flags(draft_text)
-            st.success(f"✅ Re‑flagged draft – {len(st.session_state.flags)} flags found.")
+st.header("🚦 Review Drift Flags")
 
-    for idx, flag_data in enumerate(st.session_state.flags, 1):
-        # Handle both old format (3-tuple) and new format (4-tuple with reasoning)
-        if len(flag_data) == 3:
-            sim, sent, ids = flag_data
-            reasoning = "No reasoning provided"
-        else:
-            sim, sent, ids, reasoning = flag_data
-            
-        with st.expander(f"({idx}/{len(st.session_state.flags)}) Similarity {sim:.2f}  |  {sent[:80]}…"):
-            col1, col2 = st.columns([1, 1])
+min_sim_flags = st.slider("Min similarity for flags", 0.0, 1.0, 0.0, key="flag_sim")
+filter_text_flags = st.text_input("Filter flags by text…", key="flag_text")
 
-            with col1:
-                st.markdown("##### ✏️ **Edit summary sentence**")
-                edited = st.text_area(
-                    "Sentence", value=sent, key=f"edit-{idx}", height=80, label_visibility="collapsed"
-                )
-                token_len = len(ENC.encode(edited))
-                st.caption(f"{token_len} tokens")
-                
-                # Display LLM reasoning if available
-                if reasoning and reasoning != "No reasoning provided":
-                    st.markdown("##### 🤖 **LLM Reasoning**")
-                    st.info(reasoning)
+# Filter flags
+flag_entries = [
+    f for f in st.session_state.flags
+    if f[0] >= min_sim_flags and filter_text_flags.lower() in f[1].lower()
+]
 
-            with col2:
-                st.markdown("##### 📖 **Source chunk(s)**")
-                if len(ids) == 1 and isinstance(ids[0], str) and ids[0] not in id_to_idx:
-                    # This is likely a direct source text (from JSON input)
-                    st.text_area("Source Text", value=ids[0], height=200, label_visibility="collapsed", disabled=True)
-                elif not ids:
-                    st.warning("⚠️ No source chunk(s) found for this flag.")
-                else:
-                    # This is citation-based input
-                    for cid in ids:
-                        idx2 = _cid_to_idx(cid)
-                        if idx2 is not None:
-                            st.write(chunks[idx2])
-                            st.divider()
-                        else:
-                            st.warning(f"⚠️ Source chunk '{cid}' not found.")
+for idx, flag_data in enumerate(flag_entries, 1):
+    # Support both 3‑tuple and 4‑tuple flag formats
+    if len(flag_data) == 3:
+        sim, sent, ids = flag_data
+        reasoning = "No reasoning provided"
+    else:
+        sim, sent, ids, reasoning = flag_data
 
-            # 🖍️  Diff viewer (only show if edited != original)
-            if edited.strip() != sent.strip():
-                st.markdown("##### 🔍 Diff")
-                diff_viewer(sent, edited, lang="md")
+    with st.expander(f"({idx}/{len(flag_entries)}) Similarity {sim:.2f}  |  {sent[:80]}…"):
+        col1, col2 = st.columns([1, 1])
 
-            # Keep a local mapping to inject back into full draft later
-            if "edits" not in st.session_state:
-                st.session_state.edits = {}
-            st.session_state.edits[sent] = edited
+        with col1:
+            st.markdown("##### ✏️ **Edit summary sentence**")
+            edited = st.text_area(
+                "Sentence", value=sent, key=f"edit-flag-{idx}", height=80, label_visibility="collapsed"
+            )
+            token_len = len(ENC.encode(edited))
+            st.caption(f"{token_len} tokens")
 
-    # --------------------------------------------------------------------
-    # 💾  Commit all edits – rewrites draft.md and opens a PR
-    # --------------------------------------------------------------------
-    st.sidebar.divider()
-    if st.sidebar.button("🚀 Commit **all** accepted edits → GitHub PR"):
-        # Apply edits to the draft buffer
-        new_draft = st.session_state.draft_buffer
-        for original, replacement in st.session_state.edits.items():
-            if original != replacement:
-                new_draft = new_draft.replace(original, replacement)
+            # Display LLM reasoning if available
+            if reasoning and reasoning != "No reasoning provided":
+                st.markdown("##### 🤖 **LLM Reasoning**")
+                st.info(reasoning)
 
-        create_or_update_pr(new_draft, user_name=st.sidebar.text_input("Your name", value="HOA Reviewer"))
-
-# --------------------------------------------------------------------
-# 📚  Browse All Chunks Page
-# --------------------------------------------------------------------
-elif page == "Browse All Chunks":
-    st.header("📚 Browse All Source Chunks")
-    
-    # Get list of documents
-    documents = get_document_list()
-    
-    # Document selection
-    selected_doc = st.selectbox(
-        "Select Document:",
-        ["All Documents"] + documents,
-        index=0
-    )
-    
-    if selected_doc == "All Documents":
-        # Show all chunks with pagination
-        st.subheader(f"All Chunks ({len(chunks)} total)")
-        
-        # Pagination
-        chunks_per_page = 5  # Reduced for better side-by-side viewing
-        total_pages = (len(chunks) + chunks_per_page - 1) // chunks_per_page
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            page_num = st.selectbox("Page:", range(1, total_pages + 1), index=0)
-        
-        start_idx = (page_num - 1) * chunks_per_page
-        end_idx = min(start_idx + chunks_per_page, len(chunks))
-        
-        st.write(f"Showing chunks {start_idx + 1}-{end_idx} of {len(chunks)}")
-        
-        for i in range(start_idx, end_idx):
-            chunk_id = None
-            for cid, idx in id_to_idx.items():
-                if idx == i:
-                    chunk_id = cid
-                    break
-            
-            if chunk_id:
-                doc_info = parse_chunk_id(chunk_id)
-                with st.expander(f"Chunk {i+1}: {doc_info['document']} (Page {doc_info['page']}, Chunk {doc_info['chunk']})"):
-                    col1, col2 = st.columns([1, 1])
-                    
-                    with col1:
-                        st.markdown("##### 📄 **Chunk Content**")
-                        st.text_area(
-                            "Chunk Text",
-                            value=chunks[i],
-                            height=200,
-                            label_visibility="collapsed",
-                            disabled=True,
-                            key=f"chunk-content-{i}"
-                        )
-                        st.caption(f"ID: {chunk_id} | Tokens: {len(ENC.encode(chunks[i]))}")
-                    
-                    with col2:
-                        st.markdown("##### 📖 **Source Context**")
-                        # Show the original document info and any additional context
-                        st.info(f"**Document:** {doc_info['document']}\n\n**Page:** {doc_info['page']}\n\n**Chunk:** {doc_info['chunk']}")
-                        
-                        # Show adjacent chunks for context (if available)
-                        adjacent_chunks = []
-                        for adj_idx in range(max(0, i-1), min(len(chunks), i+2)):
-                            if adj_idx != i:
-                                adj_chunk_id = None
-                                for cid, idx in id_to_idx.items():
-                                    if idx == adj_idx:
-                                        adj_chunk_id = cid
-                                        break
-                                if adj_chunk_id:
-                                    adj_doc_info = parse_chunk_id(adj_chunk_id)
-                                    if adj_doc_info['document'] == doc_info['document'] and adj_doc_info['page'] == doc_info['page']:
-                                        adjacent_chunks.append((adj_idx, chunks[adj_idx], adj_doc_info))
-                        
-                        if adjacent_chunks:
-                            st.markdown("**Adjacent chunks on same page:**")
-                            for adj_idx, adj_text, adj_info in adjacent_chunks:
-                                with st.expander(f"Chunk {adj_info['chunk']} (ID: {adj_idx+1})"):
-                                    st.text_area(
-                                        "Adjacent Content",
-                                        value=adj_text,
-                                        height=100,
-                                        label_visibility="collapsed",
-                                        disabled=True,
-                                        key=f"adjacent-chunk-{i}-{adj_idx}"
-                                    )
-                        else:
-                            st.info("No adjacent chunks on the same page.")
-    else:
-        # Show chunks for specific document
-        filtered_chunks = filter_chunks_by_document(selected_doc)
-        st.subheader(f"{selected_doc} ({len(filtered_chunks)} chunks)")
-        
-        # Page selection for this document
-        pages = sorted(list(set(chunk_info['page'] for _, _, chunk_info in filtered_chunks)))
-        selected_page = st.selectbox(
-            "Select Page:",
-            ["All Pages"] + pages,
-            index=0
-        )
-        
-        if selected_page == "All Pages":
-            display_chunks = filtered_chunks
-        else:
-            display_chunks = filter_chunks_by_page(selected_doc, selected_page)
-        
-        st.write(f"Showing {len(display_chunks)} chunks")
-        
-        for idx, chunk_text, chunk_info in display_chunks:
-            with st.expander(f"Page {chunk_info['page']}, Chunk {chunk_info['chunk']}"):
-                col1, col2 = st.columns([1, 1])
-                
-                with col1:
-                    st.markdown("##### 📄 **Chunk Content**")
-                    st.text_area(
-                        "Chunk Text",
-                        value=chunk_text,
-                        height=200,
-                        label_visibility="collapsed",
-                        disabled=True,
-                        key=f"doc-chunk-content-{chunk_info['document']}-{chunk_info['page']}-{chunk_info['chunk']}"
-                    )
-                    st.caption(f"ID: {chunk_info['full_id']} | Tokens: {len(ENC.encode(chunk_text))}")
-                
-                with col2:
-                    st.markdown("##### 📖 **Source Context**")
-                    # Show document and page information
-                    st.info(f"**Document:** {chunk_info['document']}\n\n**Page:** {chunk_info['page']}\n\n**Chunk:** {chunk_info['chunk']}")
-                    
-                    # Show adjacent chunks on the same page for context
-                    adjacent_chunks = []
-                    for adj_idx, adj_text, adj_info in display_chunks:
-                        if (adj_info['page'] == chunk_info['page'] and 
-                            adj_info['chunk'] != chunk_info['chunk']):
-                            adjacent_chunks.append((adj_idx, adj_text, adj_info))
-                    
-                    if adjacent_chunks:
-                        st.markdown("**Other chunks on this page:**")
-                        for adj_idx, adj_text, adj_info in adjacent_chunks:
-                            with st.expander(f"Chunk {adj_info['chunk']}"):
-                                st.text_area(
-                                    "Adjacent Content",
-                                    value=adj_text,
-                                    height=100,
-                                    label_visibility="collapsed",
-                                    disabled=True,
-                                    key=f"doc-adjacent-chunk-{chunk_info['document']}-{chunk_info['page']}-{adj_info['chunk']}"
-                                )
+            st.markdown("##### 📖 **Source chunk(s)**")
+            if len(ids) == 1 and isinstance(ids[0], str) and ids[0] not in id_to_idx:
+                st.text_area("Source Text", value=ids[0], height=200, label_visibility="collapsed", disabled=True)
+            elif not ids:
+                st.warning("⚠️ No source chunk(s) found for this flag.")
+            else:
+                for cid in ids:
+                    idx2 = _cid_to_idx(cid)
+                    if idx2 is not None:
+                        st.write(chunks[idx2])
+                        st.divider()
                     else:
-                        st.info("This is the only chunk on this page.")
+                        st.warning(f"⚠️ Source chunk '{cid}' not found.")
 
-# --------------------------------------------------------------------
-# 🔍  Search Chunks Page
-# --------------------------------------------------------------------
-elif page == "Search Chunks":
-    st.header("🔍 Search Chunks")
-    
-    # Search interface
-    search_query = st.text_input(
-        "Enter search query:",
-        placeholder="e.g., parking violations, assessment fees, board meetings..."
-    )
-    
-    search_limit = st.slider("Number of results:", min_value=5, max_value=100, value=20)
-    
-    if search_query:
-        with st.spinner("Searching chunks..."):
-            results = search_chunks(search_query, limit=search_limit)
-        
-        if results:
-            st.subheader(f"Search Results ({len(results)} found)")
-            
-            for i, (chunk_idx, chunk_text, similarity) in enumerate(results, 1):
-                # Get chunk ID
-                chunk_id = None
-                for cid, idx in id_to_idx.items():
-                    if idx == chunk_idx:
-                        chunk_id = cid
-                        break
-                
-                if chunk_id:
-                    doc_info = parse_chunk_id(chunk_id)
-                    with st.expander(f"{i}. Similarity: {similarity:.3f} | {doc_info['document']} (Page {doc_info['page']}, Chunk {doc_info['chunk']})"):
-                        st.text_area(
-                            "Content",
-                            value=chunk_text,
-                            height=150,
-                            label_visibility="collapsed",
-                            disabled=True,
-                            key=f"search-result-{i}-{chunk_idx}"
-                        )
-                        st.caption(f"ID: {chunk_id} | Tokens: {len(ENC.encode(chunk_text))}")
-        else:
-            st.info("No results found. Try a different search term.")
-    else:
-        st.info("Enter a search query to find relevant chunks.")
+        # Diff viewer (only show if edited differs)
+        if edited.strip() != sent.strip():
+            st.markdown("##### 🔍 Diff")
+            diff_viewer(sent, edited, lang="md")
+
+        # Store edits
+        if "edits" not in st.session_state:
+            st.session_state.edits = {}
+        st.session_state.edits[sent] = edited
+
 
 # ------------------------------------------------------------------
 # 📥  Download JSON Draft as PDF
@@ -607,86 +384,119 @@ if draft_data is not None:
         else:
             st.sidebar.warning("Could not parse summary/source pairs from JSON.")
             pairs = []
+
+    # Apply edits to JSON draft and offer download
     if pairs or executive_summary:
-        try:
-            # Generate PDF in memory using custom branded PDF class
-            pdf = PDFReport()
-            pdf.set_auto_page_break(auto=True, margin=15)
+        # Apply edits to JSON draft and offer download
+        if "edits" in st.session_state:
+            # Update pairs with edited summaries
+            for pair in pairs:
+                original = pair["summary"]
+                if original in st.session_state.edits:
+                    pair["summary"] = st.session_state.edits[original]
+        # Build revised JSON structure
+        revised = {}
+        if executive_summary is not None:
+            revised["executive_summary"] = executive_summary
+        revised["sections"] = [
+            {
+                "summary_text": p["summary"],
+                "source_text": p["source"],
+                "source_document": p["document"],
+                "source_page": p["page"]
+            }
+            for p in pairs
+        ]
+        revised_json_str = json.dumps(revised, indent=2)
+        st.sidebar.download_button(
+            label="💾 Download revised draft.json",
+            data=revised_json_str,
+            file_name="draft.json",
+            mime="application/json"
+        )
 
-            from datetime import datetime
+    # ------------------------------------------------------------------
+    # 📥  Download JSON Draft as PDF
+    # ------------------------------------------------------------------
+    try:
+        # Generate PDF in memory using custom branded PDF class
+        pdf = PDFReport()
+        pdf.set_auto_page_break(auto=True, margin=15)
 
-            # Cover page
-            pdf.add_page()
-            pdf.set_font("Helvetica", "B", 28)
-            pdf.ln(45)  # vertical spacing
-            pdf.multi_cell(0, 14, _to_latin1("Plantation Governance Report"), align="C")
-            pdf.set_font("Helvetica", "", 14)
-            pdf.ln(8)
-            pdf.multi_cell(0, 10, datetime.now().strftime("Generated on %B %d, %Y"), align="C")
-            pdf.add_page()
+        from datetime import datetime
 
-            # Optional Executive Summary
-            if executive_summary:
-                pdf.set_font("Helvetica", "B", 18)
-                pdf.multi_cell(0, 12, _to_latin1("Executive Summary"))
-                pdf.ln(2)
-                pdf.set_font("Helvetica", "", 12)
-                pdf.multi_cell(0, 8, _to_latin1(executive_summary))
+        # Cover page
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 28)
+        pdf.ln(45)  # vertical spacing
+        pdf.multi_cell(0, 14, _to_latin1("Plantation Governance Report"), align="C")
+        pdf.set_font("Helvetica", "", 14)
+        pdf.ln(8)
+        pdf.multi_cell(0, 10, datetime.now().strftime("Generated on %B %d, %Y"), align="C")
+        pdf.add_page()
 
-            # Main Sections
-            for idx, pair in enumerate(pairs, 1):
-                # Automatic page break to avoid overflow
-                if pdf.get_y() > pdf.h - pdf.b_margin - 20:
-                    pdf.add_page()
+        # Optional Executive Summary
+        if executive_summary:
+            pdf.set_font("Helvetica", "B", 18)
+            pdf.multi_cell(0, 12, _to_latin1("Executive Summary"))
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "", 12)
+            pdf.multi_cell(0, 8, _to_latin1(executive_summary))
 
-                # Separator between sections
-                if idx > 1:
-                    pdf.set_draw_color(200, 200, 200)
-                    pdf.set_line_width(0.2)
-                    y = pdf.get_y()
-                    pdf.line(pdf.l_margin, y, pdf.w - pdf.r_margin, y)
-                    pdf.ln(4)
+        # Main Sections
+        for idx, pair in enumerate(pairs, 1):
+            # Automatic page break to avoid overflow
+            if pdf.get_y() > pdf.h - pdf.b_margin - 20:
+                pdf.add_page()
 
-                # Section heading with context
-                pdf.set_font("Helvetica", "B", 16)
-                header_text = f"Section {idx}"
-                if pair["document"] or pair["page"]:
-                    header_text += f" – {pair['document']} (Page {pair['page']})"
-                pdf.multi_cell(0, 12, _to_latin1(header_text))
+            # Separator between sections
+            if idx > 1:
+                pdf.set_draw_color(200, 200, 200)
+                pdf.set_line_width(0.2)
+                y = pdf.get_y()
+                pdf.line(pdf.l_margin, y, pdf.w - pdf.r_margin, y)
                 pdf.ln(4)
 
-                # Document context
-                if pair["document"] or pair["page"]:
-                    pdf.set_font("Helvetica", "I", 11)
-                    context_line = " · ".join(filter(None, [pair["document"], f"Page {pair['page']}"]))
-                    pdf.multi_cell(0, 8, _to_latin1(context_line))
-                    pdf.ln(1)
+            # Section heading with context
+            pdf.set_font("Helvetica", "B", 16)
+            header_text = f"Section {idx}"
+            if pair["document"] or pair["page"]:
+                header_text += f" – {pair['document']} (Page {pair['page']})"
+            pdf.multi_cell(0, 12, _to_latin1(header_text))
+            pdf.ln(4)
 
-                # Summary
-                pdf.set_font("Helvetica", "B", 13)
-                pdf.multi_cell(0, 9, _to_latin1("Key Insights"))
-                pdf.set_font("Helvetica", "", 12)
-                pdf.multi_cell(0, 8, _to_latin1(pair["summary"]))
+            # Document context
+            if pair["document"] or pair["page"]:
+                pdf.set_font("Helvetica", "I", 11)
+                context_line = " · ".join(filter(None, [pair["document"], f"Page {pair['page']}"]))
+                pdf.multi_cell(0, 8, _to_latin1(context_line))
                 pdf.ln(1)
 
-                # Source
-                pdf.set_font("Helvetica", "B", 13)
-                pdf.multi_cell(0, 9, _to_latin1("Source Excerpt"))
-                pdf.set_font("Helvetica", "I", 11)
-                pdf.set_text_color(80, 80, 80)
-                pdf.multi_cell(0, 8, _to_latin1(pair["source"]))
-                pdf.set_text_color(0, 0, 0)
-                pdf.ln(4)
+            # Summary
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.multi_cell(0, 9, _to_latin1("Key Insights"))
+            pdf.set_font("Helvetica", "", 12)
+            pdf.multi_cell(0, 8, _to_latin1(pair["summary"]))
+            pdf.ln(1)
 
-            pdf_bytes = pdf.output(dest='S').encode('latin-1')
-            pdf_buffer = io.BytesIO(pdf_bytes)
-            st.sidebar.download_button(
-                label="Download PDF",
-                data=pdf_buffer,
-                file_name="draft_summaries.pdf",
-                mime="application/pdf"
-            )
-        except Exception as e:
-            st.sidebar.error(f"Failed to generate PDF: {e}")
-    else:
+            # Source
+            pdf.set_font("Helvetica", "B", 13)
+            pdf.multi_cell(0, 9, _to_latin1("Source Excerpt"))
+            pdf.set_font("Helvetica", "I", 11)
+            pdf.set_text_color(80, 80, 80)
+            pdf.multi_cell(0, 8, _to_latin1(pair["source"]))
+            pdf.set_text_color(0, 0, 0)
+            pdf.ln(4)
+
+        pdf_bytes = pdf.output(dest='S').encode('latin-1')
+        pdf_buffer = io.BytesIO(pdf_bytes)
+        st.sidebar.download_button(
+            label="Download PDF",
+            data=pdf_buffer,
+            file_name="draft_summaries.pdf",
+            mime="application/pdf"
+        )
+    except Exception as e:
+        st.sidebar.error(f"Failed to generate PDF: {e}")
+    if not (pairs or executive_summary):
         st.sidebar.info("No summary/source pairs found in JSON.")
