@@ -37,6 +37,25 @@ from tiktoken import get_encoding           # just for token count display
 
 # PDF generation
 from fpdf import FPDF
+
+# ------------------- Custom PDF class with branded header and footer -------------------
+class PDFReport(FPDF):
+    """Custom PDF class with branded header and footer."""
+    def header(self):
+        self.set_font("Helvetica", "B", 16)
+        self.cell(0, 10, "Plantation Governance Report", ln=1, align="C")
+        self.set_draw_color(100, 100, 100)
+        self.set_line_width(0.3)
+        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
+        self.ln(4)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_draw_color(200, 200, 200)
+        self.set_line_width(0.1)
+        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
+        self.set_font("Helvetica", "I", 8)
+        self.cell(0, 10, f"Page {self.page_no()}", align="C")
 import io
 import os
 import unicodedata
@@ -533,68 +552,132 @@ elif page == "Search Chunks":
 # ------------------------------------------------------------------
 st.sidebar.divider()
 st.sidebar.markdown("### Download JSON Draft as PDF")
+
+# Try to load draft.json as default
+default_draft_data = None
+try:
+    if Path("draft.json").exists():
+        with open("draft.json", "r") as f:
+            default_draft_data = json.load(f)
+        st.sidebar.success("✅ Loaded draft.json as default")
+except Exception as e:
+    st.sidebar.warning(f"⚠️ Could not load draft.json: {e}")
+
 json_draft_file = st.sidebar.file_uploader("Upload JSON draft", type=["json"], key="json-draft-upload")
+
+# Use default data if no file is uploaded
 if json_draft_file is not None:
     try:
         draft_data = json.load(json_draft_file)
-        pairs = []
-        executive_summary = None
-        # Check for executive_summary and sections (GovAI draft format)
-        if isinstance(draft_data, dict) and "sections" in draft_data:
-            executive_summary = draft_data.get("executive_summary")
-            for section in draft_data["sections"]:
-                summary = section.get("summary_text", "")
-                source = section.get("source_text", "")
-                doc = section.get("source_document", "")
-                page = section.get("source_page", "")
-                pairs.append({
-                    "summary": summary,
-                    "source": source,
-                    "document": doc,
-                    "page": page
-                })
+    except Exception as e:
+        st.sidebar.error(f"Failed to parse uploaded file: {e}")
+        draft_data = None
+elif default_draft_data is not None:
+    draft_data = default_draft_data
+    st.sidebar.info("📄 Using draft.json as default")
+else:
+    draft_data = None
+if draft_data is not None:
+    pairs = []
+    executive_summary = None
+    # Check for executive_summary and sections (GovAI draft format)
+    if isinstance(draft_data, dict) and "sections" in draft_data:
+        executive_summary = draft_data.get("executive_summary")
+        for section in draft_data["sections"]:
+            summary = section.get("summary_text", "")
+            source = section.get("source_text", "")
+            doc = section.get("source_document", "")
+            page = section.get("source_page", "")
+            pairs.append({
+                "summary": summary,
+                "source": source,
+                "document": doc,
+                "page": page
+            })
+    else:
+        # Fallback to previous logic
+        if isinstance(draft_data, list):
+            for item in draft_data:
+                if isinstance(item, dict) and "summary" in item and "source_text" in item:
+                    pairs.append({"summary": item["summary"], "source": item["source_text"], "document": "", "page": ""})
+                elif isinstance(item, (list, tuple)) and len(item) == 2:
+                    pairs.append({"summary": item[0], "source": item[1], "document": "", "page": ""})
+        elif isinstance(draft_data, dict) and "summary" in draft_data and "source_text" in draft_data:
+            pairs.append({"summary": draft_data["summary"], "source": draft_data["source_text"], "document": "", "page": ""})
         else:
-            # Fallback to previous logic
-            if isinstance(draft_data, list):
-                for item in draft_data:
-                    if isinstance(item, dict) and "summary" in item and "source_text" in item:
-                        pairs.append({"summary": item["summary"], "source": item["source_text"], "document": "", "page": ""})
-                    elif isinstance(item, (list, tuple)) and len(item) == 2:
-                        pairs.append({"summary": item[0], "source": item[1], "document": "", "page": ""})
-            elif isinstance(draft_data, dict) and "summary" in draft_data and "source_text" in draft_data:
-                pairs.append({"summary": draft_data["summary"], "source": draft_data["source_text"], "document": "", "page": ""})
-            else:
-                st.sidebar.warning("Could not parse summary/source pairs from JSON.")
-                pairs = []
-        if pairs or executive_summary:
-            # Generate PDF in memory using default font
-            pdf = FPDF()
+            st.sidebar.warning("Could not parse summary/source pairs from JSON.")
+            pairs = []
+    if pairs or executive_summary:
+        try:
+            # Generate PDF in memory using custom branded PDF class
+            pdf = PDFReport()
             pdf.set_auto_page_break(auto=True, margin=15)
+
+            from datetime import datetime
+
+            # Cover page
             pdf.add_page()
-            pdf.set_font("Arial", size=12)
+            pdf.set_font("Helvetica", "B", 28)
+            pdf.ln(45)  # vertical spacing
+            pdf.multi_cell(0, 14, _to_latin1("Plantation Governance Report"), align="C")
+            pdf.set_font("Helvetica", "", 14)
+            pdf.ln(8)
+            pdf.multi_cell(0, 10, datetime.now().strftime("Generated on %B %d, %Y"), align="C")
+            pdf.add_page()
+
+            # Optional Executive Summary
             if executive_summary:
-                pdf.set_font("Arial", style="B", size=14)
-                pdf.cell(0, 12, _to_latin1("Executive Summary"), ln=1)
-                pdf.set_font("Arial", size=12)
-                pdf.multi_cell(0, 10, _to_latin1(executive_summary))
-                pdf.ln(6)
-            for i, pair in enumerate(pairs, 1):
-                pdf.set_font("Arial", style="B", size=12)
-                pdf.cell(0, 10, _to_latin1(f"Section {i}"), ln=1)
-                if pair["document"] or pair["page"]:
-                    pdf.set_font("Arial", style="I", size=11)
-                    doc_info = f"Source: {pair['document']} (Page {pair['page']})" if pair["document"] else ""
-                    pdf.cell(0, 8, _to_latin1(doc_info), ln=1)
-                pdf.set_font("Arial", style="B", size=12)
-                pdf.cell(0, 8, _to_latin1("Summary:"), ln=1)
-                pdf.set_font("Arial", size=12)
-                pdf.multi_cell(0, 8, _to_latin1(pair["summary"]))
+                pdf.set_font("Helvetica", "B", 18)
+                pdf.multi_cell(0, 12, _to_latin1("Executive Summary"))
                 pdf.ln(2)
-                pdf.set_font("Arial", style="I", size=11)
-                pdf.cell(0, 8, _to_latin1("Source Text:"), ln=1)
-                pdf.set_font("Arial", size=11)
+                pdf.set_font("Helvetica", "", 12)
+                pdf.multi_cell(0, 8, _to_latin1(executive_summary))
+
+            # Main Sections
+            for idx, pair in enumerate(pairs, 1):
+                # Automatic page break to avoid overflow
+                if pdf.get_y() > pdf.h - pdf.b_margin - 20:
+                    pdf.add_page()
+
+                # Separator between sections
+                if idx > 1:
+                    pdf.set_draw_color(200, 200, 200)
+                    pdf.set_line_width(0.2)
+                    y = pdf.get_y()
+                    pdf.line(pdf.l_margin, y, pdf.w - pdf.r_margin, y)
+                    pdf.ln(4)
+
+                # Section heading with context
+                pdf.set_font("Helvetica", "B", 16)
+                header_text = f"Section {idx}"
+                if pair["document"] or pair["page"]:
+                    header_text += f" – {pair['document']} (Page {pair['page']})"
+                pdf.multi_cell(0, 12, _to_latin1(header_text))
+                pdf.ln(4)
+
+                # Document context
+                if pair["document"] or pair["page"]:
+                    pdf.set_font("Helvetica", "I", 11)
+                    context_line = " · ".join(filter(None, [pair["document"], f"Page {pair['page']}"]))
+                    pdf.multi_cell(0, 8, _to_latin1(context_line))
+                    pdf.ln(1)
+
+                # Summary
+                pdf.set_font("Helvetica", "B", 13)
+                pdf.multi_cell(0, 9, _to_latin1("Key Insights"))
+                pdf.set_font("Helvetica", "", 12)
+                pdf.multi_cell(0, 8, _to_latin1(pair["summary"]))
+                pdf.ln(1)
+
+                # Source
+                pdf.set_font("Helvetica", "B", 13)
+                pdf.multi_cell(0, 9, _to_latin1("Source Excerpt"))
+                pdf.set_font("Helvetica", "I", 11)
+                pdf.set_text_color(80, 80, 80)
                 pdf.multi_cell(0, 8, _to_latin1(pair["source"]))
-                pdf.ln(6)
+                pdf.set_text_color(0, 0, 0)
+                pdf.ln(4)
+
             pdf_bytes = pdf.output(dest='S').encode('latin-1')
             pdf_buffer = io.BytesIO(pdf_bytes)
             st.sidebar.download_button(
@@ -603,7 +686,7 @@ if json_draft_file is not None:
                 file_name="draft_summaries.pdf",
                 mime="application/pdf"
             )
-        else:
-            st.sidebar.info("No summary/source pairs found in JSON.")
-    except Exception as e:
-        st.sidebar.error(f"Failed to parse or generate PDF: {e}")
+        except Exception as e:
+            st.sidebar.error(f"Failed to generate PDF: {e}")
+    else:
+        st.sidebar.info("No summary/source pairs found in JSON.")
