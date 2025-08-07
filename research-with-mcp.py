@@ -47,7 +47,6 @@ from typing import Optional, Dict, Any
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from openai import OpenAI
-from openai.types import Response
 
 # Configure logging
 def setup_logging(log_level: str = "INFO", log_file: Optional[Path] = None) -> logging.Logger:
@@ -486,12 +485,12 @@ def run_parallel_topics(topics: list[str], wait: bool, out_dir: Path = Path(".")
         completed_count = len(results["completed"])
         failed_count = len(results["failed"])
         
-        logger.info(f"📊 Parallel execution completed:")
+        logger.info("📊 Parallel execution completed:")
         logger.info(f"   ✅ Completed: {completed_count}/{len(topics)}")
         logger.info(f"   ❌ Failed: {failed_count}/{len(topics)}")
         
         if failed_count > 0:
-            logger.warning(f"Some topics failed. Check logs for details.")
+            logger.warning("Some topics failed. Check logs for details.")
             # Don't raise exception here - let caller decide how to handle partial failures
         
         return results
@@ -566,7 +565,7 @@ if __name__ == "__main__":
             
             # Exit with error code if any topics failed
             if results["failed"]:
-                logger.error(f"Some topics failed. Exiting with error code.")
+                logger.error("Some topics failed. Exiting with error code.")
                 sys.exit(1)
             else:
                 logger.info("All topics completed successfully!")

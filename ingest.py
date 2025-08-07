@@ -41,7 +41,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Iterable, List, Tuple, Optional
+from typing import Iterable, List, Tuple
 
 import numpy as np
 from scipy.spatial.distance import cosine
@@ -250,7 +250,7 @@ def _load_json_sentences(json_path: Path):
         raise RuntimeError(f"No valid summary/source pairs found in JSON file {json_path}")
     
     print(f"   → Extracted {len(pairs)} summary/source pairs from JSON file")
-    print(f"   → Using raw source lines/context instead of chunked text")
+    print("   → Using raw source lines/context instead of chunked text")
     
     return pairs
 

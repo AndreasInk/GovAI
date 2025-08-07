@@ -23,7 +23,7 @@ import json
 import time
 import re
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict
 
 from scipy.spatial.distance import cosine
 
@@ -57,7 +57,6 @@ class PDFReport(FPDF):
         self.set_font("Helvetica", "I", 8)
         self.cell(0, 10, f"Page {self.page_no()}", align="C")
 import io
-import os
 import unicodedata
 
 # ------------------------------------------------------------------

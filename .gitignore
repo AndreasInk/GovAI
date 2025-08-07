@@ -11,3 +11,4 @@ wheels/
 mcp_server.log
 ngrok.log
 .DS_Store
+logs/
