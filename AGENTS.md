@@ -1,32 +1,17 @@
-# Coding Conventions for GovAI
+### Agents and Conventions for GovAI
 
-This repository holds a prototype application that summarises HOA documents and flags sentences whose embeddings differ from their cited source. The following rules apply to all files in this repo and are intended for future Codex agents.
+This repository holds a prototype application that summarises HOA documents and flags sentences whose embeddings differ from their cited source.
 
-## Commit Messages
-- The first line should be a concise summary in the imperative mood (max 72 characters).
-- Use additional paragraphs for context if needed.
+Agent integration points:
 
-## Code Style
-- Target Python 3.11 or newer.
-- Follow PEP8 with a max line length of 120 characters.
-- Use type hints and docstrings for all public functions.
-- Prefer clear variable names over comments.
+- `doc-mcp.py`: Minimal MCP server exposing `search` and `fetch` over the `docs/` corpus using stable chunk IDs `<file_id>_<page_no>_<chunk_idx>`.
+- `research-with-mcp.py`: Orchestrates OpenAI deep‑research jobs pointed at the MCP server, producing a JSON digest (`draft.json`).
 
-## Programmatic Checks
-Run these commands before committing:
-
-```bash
-ruff check .
-python -m compileall -q .
-```
-
-Address any lint or compile errors reported by these checks.
-
-## Repository Notes
-- `docs/` contains original PDF documents. Avoid adding large binaries without discussion.
-- `data/` stores generated embeddings and JSON artefacts.
-- `draft.md` is the current HOA summary. Keep it in sync with the source documents.
-
-## Pull Requests
-- Summarise notable changes and mention any new documents or dependencies.
-- Ensure all programmatic checks pass and include their results in the PR description.
+Conventions:
+- Target Python 3.10+; line length 120; prefer type hints and clear names.
+- Run checks before committing:
+  ```bash
+  ruff check .
+  python -m compileall -q .
+  ```
+- Keep `docs/` for input PDFs/DOCX; `data/` for generated artefacts; `draft.json`/`draft.md` for current draft content.

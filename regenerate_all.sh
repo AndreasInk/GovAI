@@ -215,7 +215,7 @@ python3 doc-mcp.py > "${LOG_DIR}/mcp_server_${TIMESTAMP}.log" 2>&1 &
 MCP_PID=$!
 log_info "MCP server started with PID: $MCP_PID"
 
-# Wait for MCP server to be ready
+# Wait for MCP server to be ready (FastMCP exposes HTTP for health)
 if ! wait_for_service "http://localhost:8000" "MCP server" 30; then
     log_error "MCP server failed to start"
     exit 1

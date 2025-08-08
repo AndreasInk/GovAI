@@ -83,7 +83,7 @@ logger = None
 
 MODEL = "o4-mini-deep-research"
 MCP_LABEL = "hoa_docs"
-MCP_URL = os.getenv("HOA_MCP_URL", "https://e5045bdf8623.ngrok-free.app/mcp")
+MCP_URL = os.getenv("HOA_MCP_URL", "http://localhost:8000/mcp")
 OUT_FILE = Path("draft.md")
 
 # Standard 4‑part breakdown inspired by the consolidated master document

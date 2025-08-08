@@ -430,7 +430,7 @@ def main() -> None:
     p.add_argument("--draft", type=Path, help="Path to draft file (PDF, DOCX, or MD) for drift flagging")
     p.add_argument("--out-dir", type=Path, default=Path("."), help="Output directory")
     p.add_argument("--chunk-tokens", type=int, default=400, help="Tokens per chunk")
-    p.add_argument("--threshold", type=float, default=0.2, help="Cosine similarity threshold")
+    p.add_argument("--threshold", type=float, default=0.85, help="Cosine similarity threshold (0-1; higher is stricter)")
     p.add_argument("--use-llm-judge", action="store_true", help="Use LLM judge for semantic drift detection (recommended for JSON drafts)")
     args = p.parse_args()
 

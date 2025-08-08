@@ -10,8 +10,10 @@ between summary sentences and their source text.
 from pathlib import Path
 import sys
 
-# Add the current directory to the path so we can import ai
-sys.path.insert(0, str(Path(__file__).parent))
+# Ensure local imports work when invoked directly
+root = Path(__file__).parent
+if str(root) not in sys.path:
+    sys.path.insert(0, str(root))
 
 
 def test_llm_judge():
