@@ -1,0 +1,568 @@
+[
+  [
+    0.0,
+    "Resident-owners of The Plantation automatically include membership rights to all community recreational amenities (golf course, beach club, tennis/pickleball courts, croquet lawns, fitness center, clubhouse, etc).  The governing documents (Declaration, Bylaws, and Rules/Policies) grant the Board authority to establish facility rules, committees, and operating procedures.  Members must use amenities in accordance with published rules and any posted policies at each facility (covering reservations, sign-in, attire, equipment care, and supervision of minors).  Guests are allowed only when accompanied by a member and under any guest limits or fees. Members must pay all dues; if assessments are delinquent (typically over 30 days), the Board may suspend all membership privileges .  Common restrictions apply: smoking or glass containers are generally banned in amenity areas, pets are not allowed on courts or inside club buildings, and quiet hours or noise limits must be observed.  Amenities operate only during designated hours (e.g. daylight or posted times), and advanced booking may be required for courts or events. An owner’s membership obligations include obeying all amenity rules and any Architectural or Covenants controls (where facilities do not override property-use covenants).  The Association disclaims liability for injuries in the facilities; members use them at their own risk.  Enforcement measures (fines, hearings, suspension of privileges) back up the rules  .  In summary, membership brings broad usage rights of all amenities, but every amenity is regulated by specific rules to ensure safety, fairness, and preservation of facilities, with penalties for violations.  (If any facility-specific manual was not found in the provided documents, it is assumed similar rules apply by analogy.)",
+    [],
+    "No source text available"
+  ],
+  [
+    0.9,
+    "The Board can suspend any member’s privileges if the member is over 30 days late paying dues.",
+    [
+      "§6.3 Suspension of member privileges: The Board may suspend any membership privileges of an Owner whose assessments are more than thirty (30) days delinquent until all delinquent assessments are paid in full."
+    ],
+    "The summary accurately paraphrases that the Board may suspend privileges for members over 30 days late on dues (assessments), but it omits the critical condition that the suspension lasts until all delinquent assessments are paid in full. This duration requirement is a key element of the original and its omission alters the full legal meaning."
+  ],
+  [
+    0.11,
+    "Ownership automatically confers membership in the HOA and the country club, with full amenity privileges.",
+    [
+      "Each Owner shall be and remain a member of the Association and Plantation Country Club, entitled to all rights and privileges of such membership as defined in the Governing Documents."
+    ],
+    "The summary narrows “all rights and privileges” to just “amenity privileges,” omitting non-amenity rights (e.g., voting). It also drops the qualifier “as defined in the Governing Documents” and generically calls the Association the “HOA” and the specific “Plantation Country Club” merely “country club,” losing specificity. These changes alter and omit key legal details, so the summary drifts from the source."
+  ],
+  [
+    0.13,
+    "The Board can form committees (e.g. House, Sports) to set rules for facility use.",
+    [
+      "The Board of Directors may establish committees (such as House, Golf, Tennis, or Sports Committees) to develop and recommend rules for the use of association facilities and amenities."
+    ],
+    "The summary replaces “develop and recommend rules” with “set rules,” implying that committees have actual rule-making authority rather than only the power to develop and recommend guidelines. This alteration misstates the legal role of the committees and thus constitutes semantic drift."
+  ],
+  [
+    0.08,
+    "Members must accompany and ensure their guests obey all amenity rules.",
+    [
+      "Members are responsible for their Guests and must ensure that Guests comply with all Rules & Regulations when using any recreational facility."
+    ],
+    "The summary adds a requirement that members must “accompany” guests—a duty not stated in the source (which only obligates members to ensure compliance, not physically chaperone). It also replaces “Rules & Regulations” for any “recreational facility” with the narrower term “amenity rules” and omits the specific scope of “when using any recreational facility,” thereby changing the scope and introducing new obligations. This alters the original legal intent and adds information not present in the source."
+  ],
+  [
+    0.15,
+    "All roads in the Plantation are private property maintained by the Association.",
+    [
+      "Definitions: PRIVATE ROADS – All roads within The Plantation are private and maintained by The Plantation."
+    ],
+    "The source states that all roads within The Plantation are private and maintained by The Plantation. The summary replaces the maintainer “The Plantation” with “the Association,” introducing a new party not mentioned in the source. This adds information and misidentifies who is responsible for maintenance, causing semantic drift."
+  ],
+  [
+    0.14,
+    "Only Association-approved low-speed vehicles (like course carts) may travel on Plantation roads.",
+    [
+      "Low Speed Vehicles (LSV) – Only Board-approved maintenance or golf course vehicles qualify as LSVs; motor vehicles outside these definitions are not permitted on Plantation roads."
+    ],
+    "The summary broadens and slightly shifts the approval authority and eligible vehicle types. The source specifies ‘Board-approved maintenance or golf course vehicles’ as the only LSVs permitted, and explicitly prohibits other motor vehicles. The summary instead refers to any ‘Association-approved low-speed vehicles (like course carts),’ omitting maintenance vehicles as an example and implying approval of any LSV type. It also replaces the specific ‘Board-approved’ with the more general ‘Association-approved,’ which may mislead readers about who grants permission. These changes introduce a material drift from the original legal restrictions."
+  ],
+  [
+    0.08,
+    "Some amenities have age minimums, and guests (especially minors) must be chaperoned by an adult member.",
+    [
+      "Please note there are age restrictions for the use of certain amenities as stated in the Rules that follow. Additional Rules may apply to a Guest’s use of the sports amenities, including the requirement that guests be accompanied by an adult Member."
+    ],
+    "The summary fails to specify that the chaperone requirement applies only to sports amenities and instead implies it applies to all amenities. It also adds the parenthetical “especially minors,” which is not in the source. These changes omit the critical scope limitation and introduce unwarranted emphasis, thereby misrepresenting the original requirements."
+  ],
+  [
+    0.1,
+    "The Plantation House (clubhouse) and Beach House have rules intended to improve enjoyment of those common spaces.",
+    [
+      "Plantation House, Beach House, and Commons Rules and Regulations: The rules applicable to these facilities are designed to enhance the use and enjoyment of the Plantation House (clubhouse), Beach House, and commons areas for all members."
+    ],
+    "The summary omits any reference to the commons areas, which the source text explicitly includes as a separate facility covered by the rules. By only mentioning Plantation House and Beach House and referring vaguely to “common spaces,” it fails to accurately represent the full scope of the original rules, thus introducing an omission that could mislead readers about the applicability of the regulations."
+  ],
+  [
+    0.09,
+    "Clubhouse and beach club enforce a dress code (no denim/hats) and require adult supervision for young children.",
+    [
+      "Proper attire is required in the Plantation House and Beach House (no jeans, shorts, or hats during dining or events). Children under 14 must be supervised by an adult member in all indoor amenity areas."
+    ],
+    "The summary omits key details: it generalizes the venues (‘Clubhouse and beach club’ vs. ‘Plantation House and Beach House’), drops the prohibition on shorts, removes the context restriction (‘during dining or events’), fails to specify ‘children under 14,’ and omits that supervision is required only in ‘all indoor amenity areas.’ These omissions alter the scope and conditions of the rules, misleading readers about who and where the requirements apply."
+  ],
+  [
+    0.18,
+    "Golfers must behave respectfully and wear proper golf attire (e.g. collared shirts, no jeans).",
+    [
+      "Plantation Golf Course Rules: Members are expected to always play golf in the spirit of the game and conduct themselves in a respectful manner. Proper golf attire (collared shirt, no jeans) is required on the course."
+    ],
+    "The summary changes “Members” (the specific subject in the source) to the broader term “Golfers,” potentially expanding scope. It recasts the expectation to “must behave respectfully,” elevating a stated expectation to a strict requirement. It also frames the attire list as examples (“e.g.”), implying non-exhaustiveness, whereas the source treats collared shirts and no jeans as the required standard. These shifts in scope and nuance constitute semantic drift."
+  ],
+  [
+    0.07,
+    "Tee times must be reserved; guests may play only within limits, and walking the course usually isn’t allowed.",
+    [
+      "Golf Tee Times: All players must have a reservation. Guest play is limited to the number allowed by Plantation Country Club policy, and walking the course is not permitted."
+    ],
+    "The summary accurately captures the reservation requirement and guest limits, but alters the absolute prohibition on walking the course by stating it “usually isn’t allowed.” The original text states walking is not permitted (an absolute ban), while the summary’s qualifier “usually” introduces the possibility of exceptions not found in the source. This misrepresents the strict prohibition and thus constitutes semantic drift."
+  ],
+  [
+    0.08,
+    "Tennis courts operate during daylight; members reserve courts online, and ball-machine use is restricted.",
+    [
+      "Tennis Court Usage: Courts are available from dawn to dusk. Members must reserve courts through the online system, and use of the ball machine is limited to supervised clinics."
+    ],
+    "The summary omits the critical condition that ball-machine use is limited to supervised clinics, merely stating it is “restricted,” which is vague and could mislead. Although court hours and online reservation are accurately paraphrased, failing to specify the clinic requirement constitutes semantic drift by omission."
+  ],
+  [
+    0.08,
+    "Pickleball and croquet courts have similar booking rules as tennis, and pets/young kids cannot be on the play surface.",
+    [
+      "Pickleball and Croquet: These sport amenities follow similar reservation and attire rules as tennis. No pets or unsupervised children are allowed on courts or lawns."
+    ],
+    "The summary omits the attire requirements noted in the source (attire rules as tennis) and drops the qualifier “unsupervised” for children, effectively prohibiting all young kids rather than just unsupervised ones. It also replaces “courts or lawns” with “play surface,” which could alter scope. These omissions and changes introduce semantic drift."
+  ],
+  [
+    0.15,
+    "The fitness center is open early until late evening; members must sign in, and children under 16 are always barred.",
+    [
+      "Fitness Center: Hours are 5:00 AM to 11:00 PM. All users must check in at the desk and present valid membership credentials. Children under 16 are not permitted in the Fitness Center at any time."
+    ],
+    "The summary omits the requirement to present valid membership credentials upon check-in and replaces the specific operating hours (5:00 AM–11:00 PM) with a vague “early until late evening.” These omissions remove critical details about the check-in process and exact hours, which could mislead readers about compliance requirements and availability."
+  ],
+  [
+    0.08,
+    "The pool is open late morning to sunset; no running or glass; minors need adult supervision.",
+    [
+      "Swimming Pool: Pool area is open from 10:00 AM to sunset. No running, glass containers, or rough play allowed. Children under 14 must be supervised by an adult at all times."
+    ],
+    "The summary introduces several drifts: it replaces the precise opening time (10:00 AM) with vague “late morning,” omits the prohibition on rough play, and expands the supervision requirement from children under 14 to all minors. These changes alter the original conditions and scope, thus misrepresenting the source’s legal requirements."
+  ],
+  [
+    0.08,
+    "Beach House is open during daylight; members check in on arrival; only Plantation’s equipment may be used on the beach.",
+    [
+      "Beach House Rules: Hours are sunrise to sunset. All beach users must sign in at the Beach House desk. No outside towels or umbrellas are allowed on the beach (only Plantation property is permitted)."
+    ],
+    "The summary misstates the scope and content of the original rules: it limits the sign-in requirement to “members” rather than “all beach users,” and it overgeneralizes the ban on “outside towels or umbrellas” to all “equipment.” These changes alter who must sign in and what items are restricted, thus introducing semantic drift."
+  ],
+  [
+    0.1,
+    "You must park in marked lots; unauthorized or abandoned cars can be towed away.",
+    [
+      "Parking: Vehicles must be parked only in designated spaces. Illegally parked or abandoned vehicles may be towed at the owner’s expense."
+    ],
+    "The summary correctly paraphrases the parking requirement and towing possibility but omits the critical detail that towed vehicles are at the owner’s expense. Failing to mention the cost shifts may mislead readers about financial responsibility, representing semantic drift."
+  ],
+  [
+    0.08,
+    "Breaking any amenity rule can bring fines or suspension of privileges (after formal notice and hearing).",
+    [
+      "Violations of Rules & Regulations may result in fines, suspension of amenity privileges, or suspension of voting rights, after notice and a hearing pursuant to the Enforcement Procedures."
+    ],
+    "The summary omits the potential penalty of suspension of voting rights and narrows the scope from any \"Rules & Regulations\" violations to just \"amenity rule\" violations. It also loosely paraphrases \"after notice and a hearing pursuant to the Enforcement Procedures\" as \"formal notice and hearing,\" losing reference to the specific Enforcement Procedures. These changes omit and alter critical details, causing semantic drift."
+  ],
+  [
+    0.09,
+    "Special member meetings can be called by the President, the Board, or 25% of members.",
+    [
+      "Section 3. Special Meetings. Special meetings of the Members may be called at any time by the President or by the Board of Directors, or upon written request of one-fourth (1/4) of the Members."
+    ],
+    "The summary correctly identifies who may call special meetings (President, Board of Directors, one-fourth of the members) but omits the requirement that the one-fourth must make a written request. This procedural detail is a material condition for calling such meetings and its omission constitutes semantic drift."
+  ],
+  [
+    0.15,
+    "Members must receive at least 14 days’ written notice for any association meeting.",
+    [
+      "Article V. MEETINGS OF MEMBERS: Notice of all meetings shall be given to all Members entitled to vote at least fourteen (14) days prior to the date of the meeting."
+    ],
+    "The summary omits the qualification that notice is only required for “Members entitled to vote,” thereby broadening the requirement to all members. It also adds that notice must be “written,” which is not specified in the source text. These changes introduce additional obligations and alter the scope of who must receive notice, creating semantic drift."
+  ],
+  [
+    0.08,
+    "The association is formally named \"The Plantation at Ponte Vedra, Inc.\".",
+    [
+      "ARTICLE I NAME AND LOCATION: The name of the corporation is THE PLANTATION AT PONTE VEDRA, INC."
+    ],
+    "The source text identifies the entity as a “corporation,” whereas the summary refers to it as an “association.” This change in legal classification introduces a factual inaccuracy and alters the entity’s legal meaning. No other substantive details were affected."
+  ],
+  [
+    0.09,
+    "One person cannot hold multiple director positions simultaneously (except Treasurer and Secretary).",
+    [
+      "No person shall hold more than one office at a time, except that the Secretary and Treasurer may be the same person."
+    ],
+    "The summary improperly narrows the scope from ‘offices’ (any official position) to ‘director positions,’ which is not in the source. It omits that no person may hold more than one office of any kind at a time, thus altering the legal scope. While the Treasurer/Secretary exception is preserved, the introduction of the term ‘director positions’ adds information and misrepresents the original requirement."
+  ],
+  [
+    0.24,
+    "Legacy members have limited usage rights but are not counted as voting association members.",
+    [
+      "(4) Although a Legacy Member has certain use of ... the Association Real Property, a Legacy Member is not and shall not be considered a “Member” of the Association."
+    ],
+    "The summary correctly notes limited usage rights and that Legacy Members are not considered members, but it adds the qualifier “voting” association members—implying they might be non-voting members—which is not in the source. The original prohibits any membership status, not merely voting rights. The summary also generalizes “limited usage rights” without specifying they apply to the Association Real Property. These tweaks introduce a subtle inaccuracy and potential reader confusion about non-voting membership."
+  ],
+  [
+    0.05,
+    "The Board is authorized to adopt and amend the annual budget, including spending and reserves.",
+    [
+      "Section 6. The Board shall have power to adopt and amend budgets for revenues, expenditures, and reserves."
+    ],
+    "The summary omits the Board’s authority over revenues—which is a critical component of “budgets for revenues, expenditures, and reserves”—and introduces the term “annual,” which is not specified in the source. These changes narrow the scope of the Board’s powers and add timing not present in the original text, altering its legal meaning."
+  ],
+  [
+    0.05,
+    "Charter memberships are not transferable by sale; a new owner must apply.",
+    [
+      "Section 2. Charter Membership Transfer. A Charter Membership may not be transferred by the sale of a Charter Member’s parcel."
+    ],
+    "The summary adds a requirement (“a new owner must apply”) that is not mentioned in the source text, which only states that a Charter Membership may not be transferred by sale. This introduces new obligations and thus constitutes semantic drift."
+  ],
+  [
+    0.14,
+    "Each lot conveys one voting membership (legacy lots get none).",
+    [
+      "Each owner will be assigned one membership for each parcel, except Legacy members are assigned no memberships."
+    ],
+    "The summary shifts the exception from “Legacy members” (persons) to “legacy lots” (parcels), altering who is excluded. It also introduces the term “voting membership,” which the source does not specify. These changes risk misleading readers about the scope and nature of the exception and add detail not in the original text."
+  ],
+  [
+    0.13,
+    "The Secretary must record meeting minutes and maintain official association records.",
+    [
+      "Section 3. Secretary. The Secretary shall keep minutes of all meetings and have custody of the corporate seal."
+    ],
+    "The summary omits the duty to have custody of the corporate seal and instead generalizes to “maintain official association records,” which is broader and not stated in the source. It thus misrepresents the scope of the Secretary’s responsibilities."
+  ],
+  [
+    0.15,
+    "The Treasurer manages association funds and financial records.",
+    [
+      "Section 4. Treasurer. The Treasurer shall oversee all funds and keep full and accurate books of account."
+    ],
+    "The summary paraphrases “oversee all funds” as “manages association funds” and “books of account” as “financial records,” but it omits the explicit requirement to keep those records “full and accurate.” This accuracy obligation is a key element of the source text and its removal constitutes a material omission that could mislead readers regarding the Treasurer’s duties."
+  ],
+  [
+    0.15,
+    "The Board sets the initiation (transfer) fee for new homebuyers.",
+    [
+      "(s) establish and fix the Initiation Fee amount to be paid by new Parcel Owners."
+    ],
+    "The source specifies establishing an ‘Initiation Fee’ for new Parcel Owners. The summary calls it an ‘initiation (transfer) fee’—adding the notion of a transfer that isn’t in the source—and confines it to ‘new homebuyers,’ omitting other types of new parcel owners. Both changes introduce information not in the text and narrow the scope, thus altering the original legal meaning."
+  ],
+  [
+    0.14,
+    "Bylaws can be amended with a 2/3 Board vote or a majority vote of members.",
+    [
+      "Section 1. These Bylaws may be amended by an affirmative vote of two thirds (2/3) of all members of the Board... or by a majority of the Owners."
+    ],
+    "The summary replaces “Owners” with “members,” creating ambiguity between Board members and Owners. The source distinguishes between a two-thirds vote of all Board members and a majority vote of Owners. Calling Owners “members” risks misleading readers about who may amend the Bylaws."
+  ],
+  [
+    0.05,
+    "A Grievance Committee of members can be appointed to hear appeals on enforcement actions.",
+    [
+      "Policy: Grievance Committee Membership. The Board may appoint a Grievance Committee to hear appeals by members against sanctions."
+    ],
+    "The summary reverses who is a member of the committee versus who brings appeals: the source says the Board may appoint a Grievance Committee to hear appeals by members; the summary says a committee of members can be appointed, omitting that the Board appoints it and implying committee composition rather than appellant identity. It also replaces ‘sanctions’ with the broader term ‘enforcement actions’ and fails to mention appeals must be by members, thus altering scope and authority."
+  ],
+  [
+    0.13,
+    "Members must promptly pay all billed charges as per the approved credit policy.",
+    [
+      "CREDIT POLICY: Members shall pay all charges billed to the Member promptly and in accordance with the published Credit Policy."
+    ],
+    "The summary correctly captures the obligation to pay all billed charges promptly under the credit policy, but it replaces the term “published Credit Policy” with “approved credit policy.” The source specifies that the policy must be published, not merely approved. This substitution introduces a nuance not present in the original text, constituting a minor semantic drift."
+  ],
+  [
+    0.08,
+    "Members using common facilities (clubhouse, beach house) must follow posted usage rules.",
+    [
+      "Plantation House and Beach House Rules: All users must follow posted safety and operational guidelines of each facility."
+    ],
+    "The summary narrows the scope from “all users” to just “members,” and substitutes “clubhouse” for “Plantation House,” thereby altering who is covered and changing the facility name. These shifts in scope and terminology introduce factual inaccuracy and semantic drift from the original requirement that all users must follow posted safety and operational guidelines of each facility."
+  ],
+  [
+    0.15,
+    "Owners leasing out their homes may apply for a temporary membership for the lessee, subject to Board policy.",
+    [
+      "Policy 4.7.2: Member Leases with Temporary Memberships – The Board of Directors may allow temporary memberships for leased properties under specified conditions."
+    ],
+    "The summary introduces an application process by owners (“Owners…may apply”) that is not mentioned in the source. The source simply states that the Board of Directors may allow temporary memberships under specified conditions, without describing who applies or an application requirement. This addition shifts responsibility and is not supported by the text, so it constitutes semantic drift."
+  ],
+  [
+    0.1,
+    "Reserves for capital replacements must be maintained according to policy.",
+    [
+      "Section 4.3 Policy: Reserve Accounts – Funds designated for capital improvements and replacements shall be held in reserves."
+    ],
+    "The summary omits the requirement for funds designated for capital improvements and only mentions capital replacements. The source policy mandates reserves for both improvements and replacements, so dropping improvements misrepresents the full scope of the requirement."
+  ],
+  [
+    0.08,
+    "Portions of surplus and dues allocated for replacements must be separately tracked in reserve accounts.",
+    [
+      "All reserve contributions and portions of operating surplus designated for replacement funds shall be accounted in segregated reserves."
+    ],
+    "The summary replaces “reserve contributions” with “dues,” a term not in the source, thereby adding information and omitting the original category. It also generalizes “segregated reserves” to “reserve accounts,” which may alter the legal requirement. These changes introduce semantic drift."
+  ],
+  [
+    0.08,
+    "Check signing authority is limited to specified officers, usually the Treasurer and President.",
+    [
+      "Policy 4.8: Check Signatory Authorizing – The Board shall designate the officers authorized to sign checks and contracts; typically the Treasurer and President."
+    ],
+    "The summary correctly notes that check signing authority is limited to specified officers (Treasurer and President), but it omits the policy’s grant of contract signing authority. The source requires Board designation for both checks and contracts. Omitting contracts is a critical omission that alters the scope of the policy."
+  ],
+  [
+    0.09,
+    "Late assessment payments incur monthly interest charges until paid.",
+    [
+      "Delinquent assessments will cause a notice to be delivered by mail and an interest of 1.5% per month shall be charged until payments are current."
+    ],
+    "The summary omits two critical requirements from the source: the notice delivered by mail and the specific 1.5% per month interest rate. Without these details, it lacks key legal specifics and could mislead readers about the timing, procedure, and magnitude of the penalty, thus constituting semantic drift."
+  ],
+  [
+    0.05,
+    "Persistent unpaid dues may lead the Board to place a lien on the home and initiate foreclosure.",
+    [
+      "If an account remains delinquent after a prescribed notice procedure, the Board may lien the property and pursue collection actions."
+    ],
+    "The summary omits the prerequisite ‘prescribed notice procedure’ before liening. It also replaces the broad ‘pursue collection actions’ with the specific ‘initiate foreclosure,’ adding a consequence not stated in the source. Additionally, it changes ‘property’ to ‘home,’ narrowing the scope. These alterations introduce factual omissions and additions, altering the legal meaning."
+  ],
+  [
+    0.08,
+    "Board may suspend or terminate membership of owners who do not pay dues.",
+    [
+      "Members failing to pay dues may have their membership suspended or terminated by the Board."
+    ],
+    "The summary replaces “members” with “owners,” introducing a term not present in the source text. This alteration could mislead about who is subject to suspension or termination and thus constitutes semantic drift."
+  ],
+  [
+    0.1,
+    "Expenses above a threshold need full Board approval; lower costs may be approved by the Finance Committee.",
+    [
+      "Policy 4.12: Purchasing Policy for Operating Expenses – Purchases for over $X require Board approval, smaller costs require Finance Committee approval."
+    ],
+    "The source states smaller costs require Finance Committee approval (mandatory). The summary says lower costs ‘may be approved’ by the Finance Committee, weakening a requirement to an option. This alters the legal obligation and thus introduces semantic drift."
+  ],
+  [
+    0.15,
+    "Management prepares the budget and the Board must approve it annually.",
+    [
+      "Budgetary Procedures: The Budget shall be prepared by management and approved by the Board prior to fiscal year start."
+    ],
+    "The summary omits the critical timing requirement that the Board’s approval occur “prior to fiscal year start,” instead stating only that approval must happen “annually.” This change weakens the obligation’s temporal precision and could allow approval at any point in the year rather than before the fiscal year begins, thus misleading readers about the timing requirement."
+  ],
+  [
+    0.15,
+    "Owners must get prior ARC approval for any exterior construction or landscape changes.",
+    [
+      "All plans for new construction or exterior modification must be submitted to the Architectural Review Committee for approval before beginning any work."
+    ],
+    "The summary introduces “landscape changes,” which is not explicitly mentioned in the source, and recasts “new construction or exterior modification” as only “exterior construction,” potentially narrowing the scope (new construction could include whole‐building projects, not just exterior work). While “prior ARC approval” and the “prior to beginning work” intent are maintained, the added term and scope shift misrepresent the original requirement. Thus there is semantic drift."
+  ],
+  [
+    0.05,
+    "Exterior painting or addition requires the ARC’s written consent.",
+    [
+      "No structure shall be modified or painted without prior approval of the Association’s Architectural Review Committee."
+    ],
+    "The summary narrows the source’s scope by referring only to “exterior painting” rather than any painting, reduces “modified” to only ‘additions,’ and adds a ‘written’ requirement not in the source. These changes alter the original legal requirements and therefore constitute semantic drift."
+  ],
+  [
+    0.9,
+    "Home landscaping generally must match approved plans; significant planting changes need ARC review.",
+    [
+      "Landscaping must conform to the approved master plan; all changes to front-yard plantings must be pre-approved by the ARC."
+    ],
+    "The summary weakens the absolute \"must conform\" requirement by adding \"generally,\" restricts pre-approval to only \"significant\" planting changes rather than all front-yard changes, and omits that the rule applies specifically to front-yard plantings. These changes alter the scope and mandatory nature of the source text."
+  ],
+  [
+    0.05,
+    "Owners must follow local noise rules; no loud noise or music late at night.",
+    [
+      "Noise: All owners and guests shall abide by local noise ordinances; amplified sound is prohibited after 10 PM."
+    ],
+    "The summary omits the requirement that guests (as well as owners) must comply, and it replaces the specific prohibition time (“after 10 PM”) with the vague phrase “late at night.” These changes drop critical details and introduce ambiguity, amounting to semantic drift."
+  ],
+  [
+    0.1,
+    "Overnight street parking is not allowed; cars must usually park in driveways or garages.",
+    [
+      "Parking: Vehicles may not be parked on the street overnight; all automobiles must be parked in driveways or garages only."
+    ],
+    "The summary introduces the word “usually,” which is not in the source. The original imposes an absolute requirement—vehicles “must” be parked in driveways or garages only—whereas “usually” weakens this mandate and alters the legal certainty. This added qualifier changes the intent and strictness of the rule, creating semantic drift."
+  ],
+  [
+    0.08,
+    "Playhouses and swing sets must be in backyards and conform to community standards.",
+    [
+      "Children’s play structures must be kept in rear yards and not viewable from the street unless matching community standards."
+    ],
+    "The summary restricts coverage to “playhouses and swing sets,” omitting other “children’s play structures.” It also replaces the street‐visibility restriction with an absolute requirement to “conform to community standards,” whereas the source makes standards an exception to the viewability ban. Thus it both omits the key “not viewable from the street unless matching community standards” condition and adds a blanket community‐standards requirement not present in the source, altering the legal meaning."
+  ],
+  [
+    0.05,
+    "Children under 13 need adult supervision in the community pool area.",
+    [
+      "Pool Rules (Clubhouse Pool): Children under 13 must be accompanied by an adult at all times."
+    ],
+    "The summary changes the scope by referring to a “community pool area” instead of the specified “Clubhouse Pool,” omits the explicit requirement that children be accompanied by an adult “at all times,” and replaces the precise legal term “must be accompanied” with the broader phrase “need adult supervision,” which could be interpreted as less stringent than the original continuous accompaniment requirement. These changes introduce semantic drift and potentially mislead about the rule’s scope and strictness."
+  ],
+  [
+    0.08,
+    "Only owners whose dues are current have privilege to use community recreational facilities.",
+    [
+      "Access to private amenities is limited to members in good standing with current dues."
+    ],
+    "The summary replaces “members” with “owners,” adding an ownership requirement not in the source. It also narrows “private amenities” to “community recreational facilities,” omitting other possible amenities. These changes introduce new restrictions and remove broader applicability, altering the original legal meaning."
+  ],
+  [
+    0.28,
+    "Board members and officers are required to disclose conflicts of interest per policy.",
+    [
+      "Conflict of Interest Policy: Officers and Directors must disclose any personal interest in association contracts or property."
+    ],
+    "The summary omits the key limitation that only personal interests in association contracts or property must be disclosed. By referring generally to “conflicts of interest,” it broadens the requirement beyond the specific scope set out in the source text, and thus risks misleading readers about what must be disclosed."
+  ],
+  [
+    0.15,
+    "The Finance Committee assists the Board by reviewing budgets and financial reports.",
+    [
+      "Finance Committee Charter: Oversees budgeting, financial statements, and audit processes for the Association."
+    ],
+    "The source states the Finance Committee “oversees” budgeting, financial statements, and audit processes for the Association. The summary (1) replaces “oversees” with “assists the Board,” thereby weakening and shifting the committee’s authority, (2) introduces the Board as a beneficiary, not mentioned in the source, and (3) omits the audit processes responsibility. These changes alter scope and duties and introduce information not in the original."
+  ],
+  [
+    0.12,
+    "The ARC reviews owner submissions for exterior improvements against design guidelines.",
+    [
+      "Architectural Review Committee Charter: Responsible for reviewing and approving exterior projects to ensure compliance with design standards."
+    ],
+    "The summary omits the committee’s authority to approve exterior projects, stating only that it \"reviews owner submissions.\" Approval is a core function in the source charter. While \"design guidelines\" for \"design standards\" is acceptable synonymy, and submissions by owners is implied, failing to mention approval misrepresents the committee’s responsibilities and thus constitutes semantic drift."
+  ],
+  [
+    0.13,
+    "The Golf Committee advises management on golf course operations and events (non-governing).",
+    [
+      "Golf Committee Charter: Advises on golf course operations, tournaments, and member golfing activities."
+    ],
+    "The summary adds “management” as the advice recipient (not in source), replaces “tournaments, and member golfing activities” with the vague term “events” (omitting member activities), and introduces “(non-governing)” which the source does not mention. These changes add and omit material, altering the original scope."
+  ],
+  [
+    0.16,
+    "The Tennis Committee advises on racquet sports operations and scheduling.",
+    [
+      "Tennis Committee Charter: Advises on tennis and pickleball court scheduling, formats, and rules."
+    ],
+    "The summary correctly generalizes tennis and pickleball as racquet sports and retains scheduling, but it replaces the specific advisory on ‘formats and rules’ with the vague term ‘operations.’ This omits a critical aspect of the committee’s scope and could mislead readers about its responsibilities."
+  ],
+  [
+    0.13,
+    "The Social/Events Committee organizes community social functions.",
+    [
+      "Social Committee Charter: Plans community social events and programs for members and their guests."
+    ],
+    "The summary omits that the committee also plans “programs” (not just events/functions) and that these are specifically for members and their guests. It also shifts from “plans” to “organizes,” which could imply a broader scope of responsibility. These omissions and the change in verb could mislead about the committee’s exact duties and beneficiaries, altering the original legal intent."
+  ],
+  [
+    0.15,
+    "Owners and residents are issued ID tags and gate cards for security access.",
+    [
+      "Member Tags and Security: Owners must carry membership tags and use rail gate cards for entry at all times."
+    ],
+    "The summary adds “residents,” but the source only references “owners.” It also states tags and gate cards are “issued,” whereas the source simply requires owners to carry membership tags and use gate cards at all times. These changes introduce information not present in the source, thus constituting semantic drift."
+  ],
+  [
+    0.1,
+    "Members must maintain gate access cards; replacement or misuse can incur fines.",
+    [
+      "Key Cards: Members must keep their access cards and may be fined for lost cards or unauthorized entry."
+    ],
+    "The summary introduces a requirement to pay for replacement of cards, which is not mentioned in the source. The source states members ‘may be fined for lost cards or unauthorized entry,’ but says nothing about replacement costs. By replacing ‘lost cards’ with ‘replacement’ and implying fines for that, the summary adds information not present in the source."
+  ],
+  [
+    0.13,
+    "Owners are required to maintain home and liability insurance and share proof with the association.",
+    [
+      "Insurance Requirements: All owners must carry hazard insurance and provide proof of coverage to the Association."
+    ],
+    "The summary adds a requirement for liability insurance, which is not mentioned in the source. The source only requires hazard insurance (typically covering property risks), not separate home or liability policies. This introduces new obligations and thus misrepresents the original terms."
+  ],
+  [
+    0.1,
+    "Pets must be leashed in common areas and rest only on their owner’s property.",
+    [
+      "All dogs and cats must be kept on a leash while on private or common property unless on the owner’s lot."
+    ],
+    "The summary alters key terms and conditions. It replaces “dogs and cats” with the broader “pets,” omits the requirement for leashes on private (non-owner) property, and recasts the exception (“unless on the owner’s lot”) as a new restriction that pets may only “rest” on their owner’s property. These changes introduce misleading scope, omit critical requirements, and distort the original legal intent."
+  ],
+  [
+    0.05,
+    "Owners pay monthly assessments for maintenance of roads, amenities, and services.",
+    [
+      "Each parcel owner shall pay monthly assessments to cover common expenses such as road maintenance, club facilities, and security."
+    ],
+    "The summary replaces the specific category \"security\" with the vague term \"services,\" which broadens and misrepresents the source. It also omits the phrase \"common expenses,\" though that omission is less critical. The summary thus introduces semantic drift by failing to accurately capture the discrete obligation to cover security expenses."
+  ],
+  [
+    0.1,
+    "Assessment amounts are set each year by the association, including reserve funding.",
+    [
+      "The amount and frequency of assessments shall be determined annually by the Association and may include reserves for future capital needs."
+    ],
+    "The summary omits that the frequency of assessments is also determined annually and shifts optional reserve inclusion (“may include reserves”) to a definite inclusion (“including reserve funding”), altering the original discretionary nature. These changes misrepresent the source’s scope and intent."
+  ],
+  [
+    0.09,
+    "Late assessments incur late fees and interest if not paid within 30 days.",
+    [
+      "If assessments are not paid within 30 days, the Association may impose a late fee and charge interest until paid."
+    ],
+    "The summary changes the optional ‘may impose’ in the source to the definitive ‘incur,’ implying late fees and interest automatically apply rather than at the Association’s discretion. It also omits that interest accrues ‘until paid,’ removing a key timing detail. These shifts alter the scope of authority and the duration of interest, constituting semantic drift."
+  ],
+  [
+    0.1,
+    "Building envelopes (setbacks, height, coverage) are restricted by community design standards.",
+    [
+      "Each lot shall be subject to limitations on setbacks, building height, coverage, and footprint as determined by community design standards."
+    ],
+    "The summary omits the limitation on ‘footprint’ present in the source. While it correctly references setbacks, height, and coverage restrictions under community design standards, leaving out ‘footprint’ removes a key requirement and thus misrepresents the full scope of the source text."
+  ],
+  [
+    0.14,
+    "Owners must maintain the exterior of permitted structures in good condition.",
+    [
+      "All permitted structures must be kept in good repair and painted or otherwise maintained in a manner consistent with their original condition."
+    ],
+    "The summary introduces and omits material elements of the source: it shifts responsibility explicitly to “owners” (the source simply mandates maintenance of all permitted structures without naming a party), narrows the duty to the “exterior” (the source covers the entire structure), and omits the requirement that maintenance be “consistent with their original condition.” These changes alter the scope and legal intent of the original provision."
+  ],
+  [
+    0.13,
+    "Yard signs are largely prohibited except a single real estate sign and security notices.",
+    [
+      "No signs of any kind shall be displayed to the public view on a lot except one temporary real estate sign and security signs."
+    ],
+    "The summary omits the critical requirement that the real estate sign must be temporary. The source text states “one temporary real estate sign,” whereas the summary only allows “a single real estate sign,” implying no time limit. This changes the legal requirement by removing the temporariness condition, constituting a material omission."
+  ],
+  [
+    0.85,
+    "Living in a travel trailer or temporary structure on the lot is prohibited.",
+    [
+      "No temporary structures or vehicles may be used for living, sleeping, or housekeeping on any lot."
+    ],
+    "The summary narrows the prohibition to ‘living in a travel trailer or temporary structure,’ omitting the ban on sleeping or housekeeping uses and on all vehicles (not just travel trailers). This understates the scope of the source rule."
+  ],
+  [
+    0.18,
+    "Basketball goals and similar items must usually be kept out of street view when not used.",
+    [
+      "Portable basketball hoops and other sports equipment must be placed on the rear yard or driveway when not in use."
+    ],
+    "The summary replaces the specific requirement to place portable basketball hoops and sports equipment in the rear yard or driveway with a vague mandate to keep them “out of street view,” omitting the explicitly allowed driveway location (which may be street-visible) and introducing the new concept of street visibility. It also adds the qualifier “usually,” weakening the original firm requirement. These changes alter the legal meaning and introduce information not present in the source."
+  ],
+  [
+    0.15,
+    "Owners grant the HOA and utilities easements to run necessary services across lots.",
+    [
+      "Each Owner hereby grants a permanent easement to run utility lines at suitable locations across any lot as reasonably required."
+    ],
+    "The summary adds the HOA as a beneficiary of the easement, which is not mentioned in the source. It also omits that the easement is \"permanent\" and granted \"at suitable locations as reasonably required,\" replacing these qualifiers with a broader statement about \"necessary services across lots.\" These changes introduce new parties and remove key conditions, altering the legal scope and intent of the original text."
+  ],
+  [
+    0.08,
+    "Owners must maintain liability insurance and possibly a deposit covering their lot.",
+    [
+      "Each lot Owner shall maintain a security deposit or insurance for liability for personal injury and property damage for their lot."
+    ],
+    "The source requires each lot owner to maintain either a security deposit or insurance for liability for personal injury and property damage. The summary, by stating owners “must maintain liability insurance and possibly a deposit,” implies insurance is mandatory and the deposit optional, reversing the original ‘or’ choice. This misstates the requirement and introduces a material change in legal obligation."
+  ]
+]

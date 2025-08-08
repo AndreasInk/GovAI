@@ -1,4 +1,4 @@
-# HOA Rule Summarizer & Drift Checker
+# HOA Rule Summariser & Drift Checker
 
 This project processes a set of HOA documents and generates a consolidated summary while flagging sentences whose content diverges from their cited sources. It includes:
 
