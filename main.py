@@ -1,21 +1,5 @@
 # review_app.py
-"""
-⚖️  HOA Drift-Checker – Streamlit UI
------------------------------------
-Flags low-similarity summary sentences, lets the board edit them,
-and commits accepted edits back to GitHub as a pull request.
-
-Quick-start
------------
-1.  pip install streamlit PyGithub streamlit-diff-viewer openai tiktoken
-2.  export OPENAI_API_KEY=…
-    export GITHUB_TOKEN=ghp_xxx
-    export GITHUB_REPO=username/bylaws-rewrite   #   org/repo
-3.  Have three companion files in the same folder:
-    • chunks.json        – list[str]   chunk_id → source text
-    • chunk_vecs.npy     – NumPy array of embeddings (same order)
-    • flags.json         – list[tuple(similarity, sentence, [ids], reasoning)]
-"""
+"""Streamlit UI to review drift flags and open PRs with edits."""
 from __future__ import annotations
 
 import os
@@ -24,8 +8,6 @@ import time
 import re
 from pathlib import Path
 from typing import List, Tuple, Dict
-
-from scipy.spatial.distance import cosine
 
 import numpy as np
 import streamlit as st
@@ -37,7 +19,7 @@ from tiktoken import get_encoding           # just for token count display
 # PDF generation
 from fpdf import FPDF
 
-# ------------------- Custom PDF class with branded header and footer -------------------
+# PDF report class
 class PDFReport(FPDF):
     """Custom PDF class with branded header and footer."""
     def header(self):
@@ -149,17 +131,10 @@ st.title("📜 Plantation Governance Report Drift Checker")
 # 📦 Data Setup (drag-and-drop)
 # -----------------------------
 with st.sidebar.expander("Data Setup", expanded=False):
-    st.caption("Drop PDFs or a ZIP; then build embeddings. All files are saved under `docs/` and `data/`.")
+    st.caption("Drop PDFs or a ZIP; files are saved under `docs/` and `data/`.")
     if DRIVE_URL:
         st.markdown(f"[Open shared folder]({DRIVE_URL})")
     uploaded = st.file_uploader("Upload PDFs/ZIP (docs or data)", type=["pdf", "zip"], accept_multiple_files=True)
-    colA, colB, colC = st.columns(3)
-    with colA:
-        build = st.button("Build embeddings", use_container_width=True)
-    with colB:
-        gen_flags = st.button("Generate flags", use_container_width=True)
-    with colC:
-        refresh = st.button("Re-check data", use_container_width=True)
 
     def _save_uploads(files: list) -> tuple[list[Path], list[Path]]:
         saved_docs: list[Path] = []
@@ -201,44 +176,7 @@ with st.sidebar.expander("Data Setup", expanded=False):
         if not docs_saved and not data_saved:
             st.info("No PDFs or data files found in uploads.")
 
-    if build:
-        import subprocess, sys
-        st.info("Running ingestion to build embeddings… (requires OPENAI_API_KEY)")
-        try:
-            proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--out-dir", "data/"], capture_output=True, text=True)
-            if proc.returncode == 0:
-                st.success("Embeddings built.")
-                st.experimental_rerun()
-            else:
-                st.error("Ingestion failed. See logs below.")
-                st.code(proc.stdout + "\n" + proc.stderr)
-        except Exception as e:
-            st.error(f"Failed to run ingestion: {e}")
-
-    if gen_flags:
-        import subprocess, sys
-        draft_opt = None
-        if Path("draft.json").exists():
-            draft_opt = "draft.json"
-        elif Path("draft.md").exists():
-            draft_opt = "draft.md"
-        if not draft_opt:
-            st.warning("No draft.json or draft.md found in project root.")
-        else:
-            st.info(f"Generating flags from {draft_opt}… (requires OPENAI_API_KEY)")
-            try:
-                proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--draft", draft_opt, "--out-dir", "data/"], capture_output=True, text=True)
-                if proc.returncode == 0:
-                    st.success("Flags generated.")
-                    st.experimental_rerun()
-                else:
-                    st.error("Flag generation failed. See logs below.")
-                    st.code(proc.stdout + "\n" + proc.stderr)
-            except Exception as e:
-                st.error(f"Failed to run flag generation: {e}")
-
-    if refresh:
-        st.experimental_rerun()
+    # No build or flag-generation buttons; uploading data ZIPs is sufficient
 
 # ------------------------------------------------------------------
 # ⬇️  Load pre-computed artefacts  (produced by the notebook prototype)
@@ -255,7 +193,7 @@ missing = [p.name for p in required_files if not p.exists()]
 if missing:
     st.warning(
         "Missing data: " + ", ".join(missing) +
-        ". Use the sidebar 'Data Setup' to upload a ZIP with data files or build embeddings."
+        ". Use the sidebar 'Data Setup' to upload a ZIP with data files."
     )
     st.stop()
 
@@ -483,28 +421,7 @@ def filter_chunks_by_page(document: str, page: str) -> List[Tuple[int, str, Dict
     filtered.sort(key=lambda x: int(x[2]['chunk']))
     return filtered
 
-# --------------------------------------------------------------------
-# ---------- Re-flagging helper (uses cached chunk embeddings) ----------
-# Accept IDs like `[C-123]`, `[C-Bylaws_5_3]`, or `[Bylaws_5_3]`
-_CIT_RE = re.compile(r"(?:C-)?([\w\-]+)")
-
-def _make_flags(draft_text: str, threshold: float = 0.85):
-    """Return fresh flags list from *draft_text* (markdown)."""
-    sentences = re.split(r"(?<=[.!?])\s+", draft_text)
-    new_flags = []
-    for s in sentences:
-        src_ids = [x.lower() for x in _CIT_RE.findall(s)]
-        if not src_ids:
-            continue
-        s_vec = ai.embed(s)  # (D,)
-        idxs = [_cid_to_idx(cid) for cid in src_ids if _cid_to_idx(cid) is not None]
-        if not idxs:
-            continue  # no valid matching chunks
-        worst = min(1 - cosine(s_vec, embeddings[i]) for i in idxs)
-        if worst < threshold:
-            new_flags.append((round(float(worst), 4), s, src_ids, "Vector similarity below threshold"))
-    new_flags.sort(key=lambda tup: tup[0])
-    return new_flags
+# (Re-flagging helper removed; this UI reviews precomputed flags only.)
 
 def _to_latin1(text):
     """Replace common Unicode punctuation with ASCII equivalents and remove other non-latin-1 chars."""
@@ -523,9 +440,7 @@ def _to_latin1(text):
 
  
 
-# --------------------------------------------------------------------
-# 🚦  Review Drift Flags  (restored standalone viewer)
-# --------------------------------------------------------------------
+# Review Drift Flags
 st.header("🚦 Review Drift Flags")
 
 min_sim_flags = st.slider("Min similarity for flags", 0.0, 1.0, 0.0, key="flag_sim")
