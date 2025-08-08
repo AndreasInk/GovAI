@@ -250,25 +250,6 @@ def generate(
     )
     return getattr(resp, "output_text", "")
 
-
-def stream(request: dict, model: str = "gpt-4o-mini") -> Generator[str, None, None]:
-    """Streaming helper – yields delta text chunks."""
-    messages = [_chat_message_to_openai(m) for m in request.get("messages", [])]
-    sys_prompt = request.get("system_prompt", "")
-
-    resp = ai_client.responses.create(
-        model=model,
-        instructions=sys_prompt,
-        input=messages,
-        stream=True,
-    )
-
-    for evt in resp:
-        text = getattr(evt, "delta", None) or getattr(evt, "text", None)
-        if isinstance(text, str) and text:
-            yield text
-
-
 def extract(request: dict, return_type):  # return_type is a Pydantic model (class)
     """Return a parsed Pydantic model from the assistant."""
     messages = [_chat_message_to_openai(m) for m in request.get("messages", [])]
@@ -281,23 +262,3 @@ def extract(request: dict, return_type):  # return_type is a Pydantic model (cla
         text_format=return_type,
     )
     return resp.output_parsed
-
-
-# ------------------------------------------------------------------------------
-
-
-def generate_title(first_message: str) -> str:
-    """Generate a concise 3‑5 word title for a chat."""
-    from pydantic import BaseModel
-
-    class _Title(BaseModel):
-        title: str
-
-    resp = ai_client.responses.parse(
-        model="o4-mini",
-        instructions="Create a concise 3‑5 word title.",
-        input=first_message,
-        text_format=_Title,
-    )
-    parsed = getattr(resp, "output_parsed", None)
-    return parsed.title if parsed else getattr(resp, "output_text", "Chat").strip()

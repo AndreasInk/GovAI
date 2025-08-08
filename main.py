@@ -32,7 +32,6 @@ import streamlit as st
 from st_diff_viewer import diff_viewer
 from github import Github, InputGitAuthor
 
-import ai  # your helper wrapper
 from tiktoken import get_encoding           # just for token count display
 
 # PDF generation
@@ -361,23 +360,6 @@ def get_document_list() -> List[str]:
         doc_info = parse_chunk_id(chunk_id)
         documents.add(doc_info['document'])
     return sorted(list(documents))
-
-def search_chunks(query: str, limit: int = 50) -> List[Tuple[int, str, float]]:
-    """Search chunks using semantic similarity."""
-    if not query.strip():
-        return []
-    
-    query_vec = ai.embed(query)
-    similarities = []
-    
-    for i, chunk in enumerate(chunks):
-        chunk_vec = embeddings[i]
-        sim = 1 - cosine(query_vec, chunk_vec)
-        similarities.append((i, chunk, sim))
-    
-    # Sort by similarity and return top results
-    similarities.sort(key=lambda x: x[2], reverse=True)
-    return similarities[:limit]
 
 def filter_chunks_by_document(document: str) -> List[Tuple[int, str, Dict[str, str]]]:
     """Filter chunks by document name."""
