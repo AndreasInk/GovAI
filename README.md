@@ -42,12 +42,14 @@ The app displays each flagged sentence alongside its source text. Accepted edits
 If you want to run with a fresh draft JSON, generate it first with the research workflow, then run `ingest.py` with `--draft` to create `flags.json`.
 
 ## Drag-and-drop setup (no CLI)
-If you don't want to run the CLI, you can use the Streamlit app to provision data:
+If you don't want to run the CLI, you can use the Streamlit app to provision data (no OpenAI key needed if you upload prebuilt `data/`):
 
-1) Start the app and sign in (see auth in this README)
-2) Use the sidebar "Data Setup" panel to drag-and-drop your `docs/` PDFs or a ZIP containing PDFs
-3) Click "Build embeddings" to generate `data/chunks.json`, `data/chunk_vecs.npy`, and `data/id_to_idx.json`
-4) Optionally upload a `draft.json`/`draft.md` to generate `data/flags.json`
+1) Start the app and sign in (if enabled)
+2) Use the sidebar "Data Setup" panel to drag-and-drop:
+   - PDFs or a ZIP of PDFs (goes into `docs/`)
+   - Or a ZIP containing data artefacts (`chunks.json`, `chunk_vecs.npy`, `id_to_idx.json`, `flags.json`) to populate `data/`
+3) If not uploading prebuilt data, click "Build embeddings" (requires `OPENAI_API_KEY`)
+4) Optionally click "Generate flags" if you have a `draft.json`/`draft.md` (requires `OPENAI_API_KEY`)
 
 ## Regenerating Drafts
 The `regenerate_all.sh` helper script rebuilds embeddings, launches the document MCP server and an ngrok tunnel, and generates a new draft using the research script. Review `draft_new.json` before replacing `draft.json`.

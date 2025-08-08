@@ -142,12 +142,110 @@ DRIVE_URL = os.getenv(
     "https://drive.google.com/drive/folders/1aEFZOXLcd0H1O6EdBpaiA3MWRE6UVJf1?usp=drive_link",
 )
 
+# Title first so page renders even if data is missing
+st.title("📜 Plantation Governance Report Drift Checker")
+
+# -----------------------------
+# 📦 Data Setup (drag-and-drop)
+# -----------------------------
+with st.sidebar.expander("Data Setup", expanded=False):
+    st.caption("Drop PDFs or a ZIP; then build embeddings. All files are saved under `docs/` and `data/`.")
+    if DRIVE_URL:
+        st.markdown(f"[Open shared folder]({DRIVE_URL})")
+    uploaded = st.file_uploader("Upload PDFs/ZIP (docs or data)", type=["pdf", "zip"], accept_multiple_files=True)
+    colA, colB, colC = st.columns(3)
+    with colA:
+        build = st.button("Build embeddings", use_container_width=True)
+    with colB:
+        gen_flags = st.button("Generate flags", use_container_width=True)
+    with colC:
+        refresh = st.button("Re-check data", use_container_width=True)
+
+    def _save_uploads(files: list) -> tuple[list[Path], list[Path]]:
+        saved_docs: list[Path] = []
+        saved_data: list[Path] = []
+        docs_dir = Path("docs"); docs_dir.mkdir(exist_ok=True)
+        data_dir = Path("data"); data_dir.mkdir(exist_ok=True)
+        import zipfile, io
+        for f in files:
+            name = f.name
+            if name.lower().endswith(".pdf"):
+                out = docs_dir / name
+                out.write_bytes(f.read())
+                saved_docs.append(out)
+            elif name.lower().endswith(".zip"):
+                buf = io.BytesIO(f.read())
+                with zipfile.ZipFile(buf) as zf:
+                    for zi in zf.infolist():
+                        base = Path(zi.filename).name
+                        # Docs
+                        if base.lower().endswith(".pdf"):
+                            target = docs_dir / base
+                            with zf.open(zi) as src:
+                                target.write_bytes(src.read())
+                            saved_docs.append(target)
+                        # Data artefacts
+                        elif base in {"chunks.json", "id_to_idx.json", "flags.json", "chunk_vecs.npy"}:
+                            target = data_dir / base
+                            with zf.open(zi) as src:
+                                target.write_bytes(src.read())
+                            saved_data.append(target)
+        return saved_docs, saved_data
+
+    if uploaded:
+        docs_saved, data_saved = _save_uploads(uploaded)
+        if docs_saved:
+            st.success(f"Saved {len(docs_saved)} doc(s) to `docs/`.")
+        if data_saved:
+            st.success(f"Saved {len(data_saved)} data file(s) to `data/`.")
+        if not docs_saved and not data_saved:
+            st.info("No PDFs or data files found in uploads.")
+
+    if build:
+        import subprocess, sys
+        st.info("Running ingestion to build embeddings… (requires OPENAI_API_KEY)")
+        try:
+            proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--out-dir", "data/"], capture_output=True, text=True)
+            if proc.returncode == 0:
+                st.success("Embeddings built.")
+                st.experimental_rerun()
+            else:
+                st.error("Ingestion failed. See logs below.")
+                st.code(proc.stdout + "\n" + proc.stderr)
+        except Exception as e:
+            st.error(f"Failed to run ingestion: {e}")
+
+    if gen_flags:
+        import subprocess, sys
+        draft_opt = None
+        if Path("draft.json").exists():
+            draft_opt = "draft.json"
+        elif Path("draft.md").exists():
+            draft_opt = "draft.md"
+        if not draft_opt:
+            st.warning("No draft.json or draft.md found in project root.")
+        else:
+            st.info(f"Generating flags from {draft_opt}… (requires OPENAI_API_KEY)")
+            try:
+                proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--draft", draft_opt, "--out-dir", "data/"], capture_output=True, text=True)
+                if proc.returncode == 0:
+                    st.success("Flags generated.")
+                    st.experimental_rerun()
+                else:
+                    st.error("Flag generation failed. See logs below.")
+                    st.code(proc.stdout + "\n" + proc.stderr)
+            except Exception as e:
+                st.error(f"Failed to run flag generation: {e}")
+
+    if refresh:
+        st.experimental_rerun()
+
 # ------------------------------------------------------------------
 # ⬇️  Load pre-computed artefacts  (produced by the notebook prototype)
 # ------------------------------------------------------------------
 DATA_DIR = Path(__file__).parent / "data"
 
-# Validate required artefacts exist
+# Validate required artefacts exist; allow page to render if missing so users can upload data
 required_files = [
     DATA_DIR / "chunks.json",
     DATA_DIR / "chunk_vecs.npy",
@@ -155,9 +253,9 @@ required_files = [
 ]
 missing = [p.name for p in required_files if not p.exists()]
 if missing:
-    st.error(
-        "Missing required data files: " + ", ".join(missing) +
-        ". Run: `python ingest.py docs/ --out-dir data/` and optionally `--draft draft.json` to generate flags."
+    st.warning(
+        "Missing data: " + ", ".join(missing) +
+        ". Use the sidebar 'Data Setup' to upload a ZIP with data files or build embeddings."
     )
     st.stop()
 
