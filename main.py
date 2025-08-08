@@ -278,8 +278,6 @@ def create_or_update_pr(new_content: str, user_name: str = "HOA Reviewer") -> No
     st.success(f"✅ Pull Request created: {pr.html_url}")
 
 
-st.title("📜 Plantation Governance Report Drift Checker")
-
 st.sidebar.markdown(f"**{len(st.session_state.flags)} flags** loaded · Source chunks: **{len(chunks)}**")
 
 # -----------------------------
@@ -290,11 +288,6 @@ with st.sidebar.expander("Data Setup", expanded=False):
     if DRIVE_URL:
         st.markdown(f"[Open shared folder]({DRIVE_URL})")
     uploaded = st.file_uploader("Upload PDFs or ZIP", type=["pdf", "zip"], accept_multiple_files=True)
-    colA, colB = st.columns(2)
-    with colA:
-        build = st.button("Build embeddings", use_container_width=True)
-    with colB:
-        gen_flags = st.button("Generate flags from draft", use_container_width=True)
 
     def _save_uploads(files: list) -> list[Path]:
         saved: list[Path] = []
@@ -324,41 +317,6 @@ with st.sidebar.expander("Data Setup", expanded=False):
             st.success(f"Saved {len(saved_paths)} file(s) to `docs/`.")
         else:
             st.info("No PDFs found in uploads.")
-
-    if build:
-        import subprocess, sys
-        st.info("Running ingestion to build embeddings…")
-        try:
-            proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--out-dir", "data/"], capture_output=True, text=True)
-            if proc.returncode == 0:
-                st.success("Embeddings built. Reload the app to pick up new data.")
-            else:
-                st.error("Ingestion failed. See logs below.")
-                st.code(proc.stdout + "\n" + proc.stderr)
-        except Exception as e:
-            st.error(f"Failed to run ingestion: {e}")
-
-    if gen_flags:
-        import subprocess, sys
-        draft_opt = None
-        # Prefer a local draft.json, fallback to draft.md if present
-        if Path("draft.json").exists():
-            draft_opt = "draft.json"
-        elif Path("draft.md").exists():
-            draft_opt = "draft.md"
-        if not draft_opt:
-            st.warning("No draft.json or draft.md found in project root.")
-        else:
-            st.info(f"Generating flags from {draft_opt}…")
-            try:
-                proc = subprocess.run([sys.executable, "ingest.py", "docs/", "--draft", draft_opt, "--out-dir", "data/"], capture_output=True, text=True)
-                if proc.returncode == 0:
-                    st.success("Flags generated. Reload the app to pick up new data.")
-                else:
-                    st.error("Flag generation failed. See logs below.")
-                    st.code(proc.stdout + "\n" + proc.stderr)
-            except Exception as e:
-                st.error(f"Failed to run flag generation: {e}")
 
 # Global "edited draft" buffer (one long string)
 if "draft_buffer" not in st.session_state:
