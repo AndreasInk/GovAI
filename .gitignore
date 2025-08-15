@@ -27,3 +27,6 @@ mcp_server.log
 ngrok.log
 .DS_Store
 logs/
+docs+data/draft.md
+docs+data/draft.json
+docs+data.zip

@@ -165,6 +165,11 @@ with st.sidebar.expander("Data Setup", expanded=False):
                             with zf.open(zi) as src:
                                 target.write_bytes(src.read())
                             saved_data.append(target)
+                        # Draft files – save to repo root for app defaults
+                        elif base in {"draft.json", "draft.md"}:
+                            target = Path(base)
+                            with zf.open(zi) as src:
+                                target.write_bytes(src.read())
         return saved_docs, saved_data
 
     if uploaded:
@@ -320,7 +325,15 @@ with st.sidebar.expander("Data Setup", expanded=False):
 
 # Global "edited draft" buffer (one long string)
 if "draft_buffer" not in st.session_state:
-    st.session_state.draft_buffer = Path("draft.md").read_text()
+    default_md: str | None = None
+    for cand in (Path("draft.md"), Path("docs+data") / "draft.md"):
+        try:
+            if cand.exists():
+                default_md = cand.read_text(encoding="utf-8", errors="ignore")
+                break
+        except Exception:
+            pass
+    st.session_state.draft_buffer = default_md or ""
 
 # --------------------------------------------------------------------
 # 📚  Chunk Browser Functions
@@ -401,13 +414,16 @@ def _to_latin1(text):
 # Review Drift Flags
 st.header("🚦 Review Drift Flags")
 
-min_sim_flags = st.slider("Min similarity for flags", 0.0, 1.0, 0.0, key="flag_sim")
+# Show flags at or below this similarity (default aligns with detection threshold)
+max_sim_flags = st.slider(
+    "Max similarity to show (lower = worse match)", 0.0, 1.0, 0.85, key="flag_sim"
+)
 filter_text_flags = st.text_input("Filter flags by text…", key="flag_text")
 
 # Filter flags
 flag_entries = [
     f for f in st.session_state.flags
-    if f[0] >= min_sim_flags and filter_text_flags.lower() in f[1].lower()
+    if f[0] <= max_sim_flags and filter_text_flags.lower() in f[1].lower()
 ]
 
 for idx, flag_data in enumerate(flag_entries, 1):
@@ -466,13 +482,16 @@ for idx, flag_data in enumerate(flag_entries, 1):
 st.sidebar.divider()
 st.sidebar.markdown("### Download JSON Draft as PDF")
 
-# Try to load draft.json as default
+# Try to load draft.json as default (fallback to docs+data/)
 default_draft_data = None
 try:
-    if Path("draft.json").exists():
-        with open("draft.json", "r") as f:
-            default_draft_data = json.load(f)
-        st.sidebar.success("✅ Loaded draft.json as default")
+    json_candidates = [Path("draft.json"), Path("docs+data") / "draft.json"]
+    for cand in json_candidates:
+        if cand.exists():
+            with open(cand, "r") as f:
+                default_draft_data = json.load(f)
+            st.sidebar.success(f"✅ Loaded {cand} as default")
+            break
 except Exception as e:
     st.sidebar.warning(f"⚠️ Could not load draft.json: {e}")
 
@@ -579,50 +598,49 @@ if draft_data is not None:
             pdf.set_font("Helvetica", "", 12)
             pdf.multi_cell(0, 8, _to_latin1(executive_summary))
 
-        # Main Sections
-        for idx, pair in enumerate(pairs, 1):
-            # Automatic page break to avoid overflow
-            if pdf.get_y() > pdf.h - pdf.b_margin - 20:
-                pdf.add_page()
+        # Narrative Sections – group by source document and render as paragraphs
+        if pairs:
+            # Build groups by document
+            from collections import defaultdict
+            doc_groups: Dict[str, list] = defaultdict(list)
+            for item in pairs:
+                key = item["document"] or "General"
+                doc_groups[key].append(item)
 
-            # Separator between sections
-            if idx > 1:
-                pdf.set_draw_color(200, 200, 200)
-                pdf.set_line_width(0.2)
-                y = pdf.get_y()
-                pdf.line(pdf.l_margin, y, pdf.w - pdf.r_margin, y)
-                pdf.ln(4)
+            # Deterministic order: General first, then by document name
+            ordered_docs = sorted(doc_groups.keys(), key=lambda k: (k != "General", str(k).lower()))
 
-            # Section heading with context
-            pdf.set_font("Helvetica", "B", 16)
-            header_text = f"Section {idx}"
-            if pair["document"] or pair["page"]:
-                header_text += f" – {pair['document']} (Page {pair['page']})"
-            pdf.multi_cell(0, 12, _to_latin1(header_text))
-            pdf.ln(4)
+            for d_idx, doc_name in enumerate(ordered_docs, 1):
+                if pdf.get_y() > pdf.h - pdf.b_margin - 30:
+                    pdf.add_page()
 
-            # Document context
-            if pair["document"] or pair["page"]:
-                pdf.set_font("Helvetica", "I", 11)
-                context_line = " · ".join(filter(None, [pair["document"], f"Page {pair['page']}"]))
-                pdf.multi_cell(0, 8, _to_latin1(context_line))
-                pdf.ln(1)
+                # Document heading
+                pdf.set_font("Helvetica", "B", 16)
+                pdf.multi_cell(0, 12, _to_latin1(str(doc_name)))
+                pdf.ln(2)
 
-            # Summary
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.multi_cell(0, 9, _to_latin1("Key Insights"))
-            pdf.set_font("Helvetica", "", 12)
-            pdf.multi_cell(0, 8, _to_latin1(pair["summary"]))
-            pdf.ln(1)
+                # Sort entries by page where possible
+                entries = doc_groups[doc_name]
+                def _page_key(entry):
+                    try:
+                        return int(entry.get("page") or 0)
+                    except Exception:
+                        return 0
+                entries.sort(key=_page_key)
 
-            # Source
-            pdf.set_font("Helvetica", "B", 13)
-            pdf.multi_cell(0, 9, _to_latin1("Source Excerpt"))
-            pdf.set_font("Helvetica", "I", 11)
-            pdf.set_text_color(80, 80, 80)
-            pdf.multi_cell(0, 8, _to_latin1(pair["source"]))
-            pdf.set_text_color(0, 0, 0)
-            pdf.ln(4)
+                # Paragraph-style summaries with inline citation
+                pdf.set_font("Helvetica", "", 12)
+                for entry in entries:
+                    if pdf.get_y() > pdf.h - pdf.b_margin - 20:
+                        pdf.add_page()
+                        pdf.set_font("Helvetica", "", 12)
+                    citation_bits = []
+                    if entry.get("page"):
+                        citation_bits.append(f"p. {entry['page']}")
+                    citation = f" ({', '.join(citation_bits)})" if citation_bits else ""
+                    paragraph = f"{entry['summary']}{citation}"
+                    pdf.multi_cell(0, 8, _to_latin1(paragraph))
+                    pdf.ln(2)
 
         pdf_bytes = pdf.output(dest='S').encode('latin-1')
         pdf_buffer = io.BytesIO(pdf_bytes)

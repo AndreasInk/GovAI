@@ -30,8 +30,8 @@ Behaviour
 * Polls for completion if `--wait` is given.
 
 The resulting summary will contain inline citations like `[C-221]` where
-`221` refers to the `chunk_id` provided by the MCP.  Save the `output_text`
-to `draft.md`, then run the Streamlit drift‑checker to flag issues.
+`221` refers to the `chunk_id` provided by the MCP. Save the JSON `output_text`
+to `draft.json`, then run the Streamlit drift‑checker to flag issues.
 """
 from __future__ import annotations
 
@@ -84,7 +84,7 @@ logger = None
 MODEL = "o4-mini-deep-research"
 MCP_LABEL = "hoa_docs"
 MCP_URL = os.getenv("HOA_MCP_URL", "http://localhost:8000/mcp")
-OUT_FILE = Path("draft.md")
+OUT_FILE = Path("draft.json")
 
 # Standard 4‑part breakdown inspired by the consolidated master document
 DEFAULT_TOPICS: list[str] = [
@@ -505,13 +505,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--wait",
         action="store_true",
-        help="Poll until the job finishes and write output to draft.md",
+        help="Poll until the job finishes and write output to draft.json",
     )
     parser.add_argument(
         "--out",
         type=Path,
         default=None,
-        help="Custom output markdown file (requires --wait)",
+        help="Custom output JSON file (requires --wait)",
     )
     parser.add_argument(
         "--std-chunks",
