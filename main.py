@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import os
+import math
 import json
 import time
-import re
+import io
 from pathlib import Path
 from typing import List, Tuple, Dict
 
@@ -15,30 +16,8 @@ from st_diff_viewer import diff_viewer
 from github import Github, InputGitAuthor
 
 from tiktoken import get_encoding           # just for token count display
-
-# PDF generation
 from fpdf import FPDF
 
-# PDF report class
-class PDFReport(FPDF):
-    """Custom PDF class with branded header and footer."""
-    def header(self):
-        self.set_font("Helvetica", "B", 16)
-        self.cell(0, 10, "Plantation Governance Report", ln=1, align="C")
-        self.set_draw_color(100, 100, 100)
-        self.set_line_width(0.3)
-        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
-        self.ln(4)
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_draw_color(200, 200, 200)
-        self.set_line_width(0.1)
-        self.line(self.l_margin, self.y, self.w - self.r_margin, self.y)
-        self.set_font("Helvetica", "I", 8)
-        self.cell(0, 10, f"Page {self.page_no()}", align="C")
-import io
-import unicodedata
 
 # -------------------------
 # 🌐  Streamlit page config
@@ -128,60 +107,64 @@ DRIVE_URL = os.getenv(
 st.title("📜 Plantation Governance Report Drift Checker")
 
 # -----------------------------
-# 📦 Data Setup (drag-and-drop)
+# 📦 Data Setup (always visible)
 # -----------------------------
-with st.sidebar.expander("Data Setup", expanded=False):
-    st.caption("Drop PDFs or a ZIP; files are saved under `docs/` and `data/`.")
-    if DRIVE_URL:
-        st.markdown(f"[Open shared folder]({DRIVE_URL})")
-    uploaded = st.file_uploader("Upload PDFs/ZIP (docs or data)", type=["pdf", "zip"], accept_multiple_files=True)
+st.sidebar.markdown("### Data Setup")
+st.sidebar.caption("Drop PDFs or a ZIP; files are saved under `docs/` and `data/`.")
+if DRIVE_URL:
+    st.sidebar.markdown(f"[Open shared folder]({DRIVE_URL})")
+uploaded = st.sidebar.file_uploader(
+    "Upload PDFs/ZIP (docs or data)", type=["pdf", "zip"], accept_multiple_files=True
+)
 
-    def _save_uploads(files: list) -> tuple[list[Path], list[Path]]:
-        saved_docs: list[Path] = []
-        saved_data: list[Path] = []
-        docs_dir = Path("docs"); docs_dir.mkdir(exist_ok=True)
-        data_dir = Path("data"); data_dir.mkdir(exist_ok=True)
-        import zipfile, io
-        for f in files:
-            name = f.name
-            if name.lower().endswith(".pdf"):
-                out = docs_dir / name
-                out.write_bytes(f.read())
-                saved_docs.append(out)
-            elif name.lower().endswith(".zip"):
-                buf = io.BytesIO(f.read())
-                with zipfile.ZipFile(buf) as zf:
-                    for zi in zf.infolist():
-                        base = Path(zi.filename).name
-                        # Docs
-                        if base.lower().endswith(".pdf"):
-                            target = docs_dir / base
-                            with zf.open(zi) as src:
-                                target.write_bytes(src.read())
-                            saved_docs.append(target)
-                        # Data artefacts
-                        elif base in {"chunks.json", "id_to_idx.json", "flags.json", "chunk_vecs.npy"}:
-                            target = data_dir / base
-                            with zf.open(zi) as src:
-                                target.write_bytes(src.read())
-                            saved_data.append(target)
-                        # Draft files – save to repo root for app defaults
-                        elif base in {"draft.json", "draft.md"}:
-                            target = Path(base)
-                            with zf.open(zi) as src:
-                                target.write_bytes(src.read())
-        return saved_docs, saved_data
+def _save_uploads(files: list) -> tuple[list[Path], list[Path]]:
+    saved_docs: list[Path] = []
+    saved_data: list[Path] = []
+    docs_dir = Path("docs")
+    docs_dir.mkdir(exist_ok=True)
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+    import zipfile
+    for f in files:
+        name = f.name
+        if name.lower().endswith(".pdf"):
+            out = docs_dir / name
+            out.write_bytes(f.read())
+            saved_docs.append(out)
+        elif name.lower().endswith(".zip"):
+            buf = io.BytesIO(f.read())
+            with zipfile.ZipFile(buf) as zf:
+                for zi in zf.infolist():
+                    base = Path(zi.filename).name
+                    # Docs
+                    if base.lower().endswith(".pdf"):
+                        target = docs_dir / base
+                        with zf.open(zi) as src:
+                            target.write_bytes(src.read())
+                        saved_docs.append(target)
+                    # Data artefacts
+                    elif base in {"chunks.json", "id_to_idx.json", "flags.json", "chunk_vecs.npy"}:
+                        target = data_dir / base
+                        with zf.open(zi) as src:
+                            target.write_bytes(src.read())
+                        saved_data.append(target)
+                    # Draft files – save to repo root for app defaults
+                    elif base in {"draft.json", "draft.md"}:
+                        target = Path(base)
+                        with zf.open(zi) as src:
+                            target.write_bytes(src.read())
+    return saved_docs, saved_data
 
-    if uploaded:
-        docs_saved, data_saved = _save_uploads(uploaded)
-        if docs_saved:
-            st.success(f"Saved {len(docs_saved)} doc(s) to `docs/`.")
-        if data_saved:
-            st.success(f"Saved {len(data_saved)} data file(s) to `data/`.")
-        if not docs_saved and not data_saved:
-            st.info("No PDFs or data files found in uploads.")
+if uploaded:
+    docs_saved, data_saved = _save_uploads(uploaded)
+    if docs_saved:
+        st.sidebar.success(f"Saved {len(docs_saved)} doc(s) to `docs/`.")
+    if data_saved:
+        st.sidebar.success(f"Saved {len(data_saved)} data file(s) to `data/`.")
+    if not docs_saved and not data_saved:
+        st.sidebar.info("No PDFs or data files found in uploads.")
 
-    # No build or flag-generation buttons; uploading data ZIPs is sufficient
+# No build or flag-generation buttons; uploading data ZIPs is sufficient
 
 # ------------------------------------------------------------------
 # ⬇️  Load pre-computed artefacts  (produced by the notebook prototype)
@@ -225,6 +208,145 @@ def _cid_to_idx(cid: str | int) -> int | None:
     return id_to_idx.get(str(cid).lower())
 
 ENC = get_encoding("cl100k_base")
+
+# -----------------------------
+# 🧩 Cohesive report helpers
+# -----------------------------
+# Build reverse mapping for chunk IDs where possible
+IDX_TO_ID: dict[int, str] = {}
+if id_to_idx:
+    try:
+        IDX_TO_ID = {v: k for k, v in id_to_idx.items()}
+    except Exception:
+        IDX_TO_ID = {}
+
+
+def _to_latin1(text: str) -> str:
+    """Simplify punctuation and strip non latin-1 for PDF output."""
+    if not isinstance(text, str):
+        return text
+    replacements = {
+        "\u2018": "'", "\u2019": "'", "\u201c": '"', "\u201d": '"',
+        "\u2013": '-', "\u2014": '-', "\u2026": '...', "\u2012": '-',
+        "\u2010": '-', "\u2011": '-', "\u00a0": ' ',
+    }
+    for uni, ascii_ in replacements.items():
+        text = text.replace(uni, ascii_)
+    try:
+        import unicodedata as _ud
+        return _ud.normalize('NFKD', text).encode('latin-1', 'ignore').decode('latin-1')
+    except Exception:
+        return text
+
+
+def _clean_sentence(s: str) -> str:
+    s = s.strip()
+    if not s:
+        return s
+    if s[-1] not in '.!?':
+        s = s + '.'
+    s = s.replace(' ,', ',').replace(' .', '.')
+    return s
+
+
+def build_cohesive_sections() -> list[tuple[str, list[str]]]:
+    """Build a simple, cohesive narrative grouped by document.
+
+    Returns: list of (document_title, paragraphs)
+    """
+    entries: list[tuple[str, int, int, str]] = []  # (doc, page, chunk, text)
+    seen = set()
+    for flag in st.session_state.flags:
+        if len(flag) == 3:
+            _sim, sent, ids = flag
+        else:
+            _sim, sent, ids, _reason = flag
+        text = st.session_state.get('edits', {}).get(sent, sent) if isinstance(sent, str) else str(sent)
+        text = _clean_sentence(text)
+        doc_name = 'General'
+        page = 0
+        chunk_no = 0
+        if isinstance(ids, (list, tuple)) and ids:
+            for cid in ids:
+                cid_str = None
+                if isinstance(cid, str):
+                    cid_str = cid
+                elif isinstance(cid, int) and cid in IDX_TO_ID:
+                    cid_str = IDX_TO_ID[cid]
+                if cid_str:
+                    info = parse_chunk_id(cid_str)
+                    doc_name = info.get('document') or doc_name
+                    try:
+                        page = int(info.get('page') or 0)
+                        chunk_no = int(info.get('chunk') or 0)
+                    except Exception:
+                        pass
+                    break
+        key = (doc_name, page, chunk_no, text)
+        if key in seen:
+            continue
+        seen.add(key)
+        entries.append((doc_name, page, chunk_no, text))
+
+    from collections import defaultdict
+    groups: dict[str, list[tuple[int, int, str]]] = defaultdict(list)
+    for doc, page, chunk_no, text in entries:
+        groups[doc].append((page, chunk_no, text))
+    for doc in groups:
+        groups[doc].sort(key=lambda x: (x[0], x[1]))
+
+    result: list[tuple[str, list[str]]] = []
+    for doc in sorted(groups.keys(), key=lambda k: (k != 'General', str(k).lower())):
+        paras: list[str] = []
+        cur_page = None
+        buf: list[str] = []
+        for page, _chunk, text in groups[doc]:
+            if cur_page is None:
+                cur_page = page
+            if page != cur_page and buf:
+                paras.append(' '.join(buf))
+                buf = []
+                cur_page = page
+            buf.append(text)
+        if buf:
+            paras.append(' '.join(buf))
+        # Deduplicate simple
+        uniq: list[str] = []
+        seen_p = set()
+        for p in paras:
+            key = p.strip().lower()
+            if key in seen_p:
+                continue
+            seen_p.add(key)
+            uniq.append(p)
+        title = doc.replace('_', ' ').strip().title() if doc else 'General'
+        result.append((title, uniq))
+    return result
+
+
+def generate_pdf_bytes(sections: list[tuple[str, list[str]]]) -> bytes:
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    # Cover page
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 20)
+    pdf.ln(20)
+    pdf.multi_cell(0, 12, _to_latin1("Plantation Governance Report"), align="C")
+    pdf.set_font("Helvetica", "", 11)
+    from datetime import datetime
+    pdf.ln(4)
+    pdf.multi_cell(0, 8, datetime.now().strftime("Generated on %B %d, %Y"), align="C")
+    # Sections
+    for title, paras in sections:
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 16)
+        pdf.multi_cell(0, 10, _to_latin1(title))
+        pdf.ln(2)
+        pdf.set_font("Helvetica", "", 12)
+        for p in paras:
+            pdf.multi_cell(0, 8, _to_latin1(p))
+            pdf.ln(2)
+    return pdf.output(dest='S').encode('latin-1')
 
 # ---------------------------------------------
 # 🔐  GitHub client  (lazy-init on first commit)
@@ -284,44 +406,6 @@ def create_or_update_pr(new_content: str, user_name: str = "HOA Reviewer") -> No
 
 
 st.sidebar.markdown(f"**{len(st.session_state.flags)} flags** loaded · Source chunks: **{len(chunks)}**")
-
-# -----------------------------
-# 📦 Data Setup (drag-and-drop)
-# -----------------------------
-with st.sidebar.expander("Data Setup", expanded=False):
-    st.caption("Drop PDFs or a ZIP; then build embeddings. All files are saved under `docs/` and `data/`.")
-    if DRIVE_URL:
-        st.markdown(f"[Open shared folder]({DRIVE_URL})")
-    uploaded = st.file_uploader("Upload PDFs or ZIP", type=["pdf", "zip"], accept_multiple_files=True)
-
-    def _save_uploads(files: list) -> list[Path]:
-        saved: list[Path] = []
-        docs_dir = Path("docs")
-        docs_dir.mkdir(exist_ok=True)
-        import zipfile, io
-        for f in files:
-            name = f.name
-            if name.lower().endswith(".pdf"):
-                out = docs_dir / name
-                out.write_bytes(f.read())
-                saved.append(out)
-            elif name.lower().endswith(".zip"):
-                buf = io.BytesIO(f.read())
-                with zipfile.ZipFile(buf) as zf:
-                    for zi in zf.infolist():
-                        if zi.filename.lower().endswith(".pdf"):
-                            target = docs_dir / Path(zi.filename).name
-                            with zf.open(zi) as src:
-                                target.write_bytes(src.read())
-                            saved.append(target)
-        return saved
-
-    if uploaded:
-        saved_paths = _save_uploads(uploaded)
-        if saved_paths:
-            st.success(f"Saved {len(saved_paths)} file(s) to `docs/`.")
-        else:
-            st.info("No PDFs found in uploads.")
 
 # Global "edited draft" buffer (one long string)
 if "draft_buffer" not in st.session_state:
@@ -394,263 +478,230 @@ def filter_chunks_by_page(document: str, page: str) -> List[Tuple[int, str, Dict
 
 # (Re-flagging helper removed; this UI reviews precomputed flags only.)
 
-def _to_latin1(text):
-    """Replace common Unicode punctuation with ASCII equivalents and remove other non-latin-1 chars."""
-    if not isinstance(text, str):
-        return text
-    # Replace curly quotes, dashes, ellipsis, etc.
-    replacements = {
-        '\u2018': "'", '\u2019': "'", '\u201c': '"', '\u201d': '"',
-        '\u2013': '-', '\u2014': '-', '\u2026': '...', '\u2012': '-',
-        '\u2010': '-', '\u2011': '-', '\u00a0': ' ',
-    }
-    for uni, ascii_ in replacements.items():
-        text = text.replace(uni, ascii_)
-    # Remove any remaining non-latin-1 chars
-    return unicodedata.normalize('NFKD', text).encode('latin-1', 'ignore').decode('latin-1')
+ 
 
  
 
-# Review Drift Flags
-st.header("🚦 Review Drift Flags")
+tab_review, tab_chat = st.tabs(["Review Flags", "Search Docs"])
 
-# Show flags at or below this similarity (default aligns with detection threshold)
-max_sim_flags = st.slider(
-    "Max similarity to show (lower = worse match)", 0.0, 1.0, 0.85, key="flag_sim"
-)
-filter_text_flags = st.text_input("Filter flags by text…", key="flag_text")
+with tab_review:
+    st.header("🚦 Review Drift Flags")
 
-# Filter flags
-flag_entries = [
-    f for f in st.session_state.flags
-    if f[0] <= max_sim_flags and filter_text_flags.lower() in f[1].lower()
-]
+    # Show flags at or below this similarity (default aligns with detection threshold)
+    max_sim_flags = st.slider(
+        "Max similarity to show (lower = worse match)", 0.0, 1.0, 0.85, key="flag_sim"
+    )
+    filter_text_flags = st.text_input("Filter flags by text…", key="flag_text")
 
-for idx, flag_data in enumerate(flag_entries, 1):
-    # Support both 3‑tuple and 4‑tuple flag formats
-    if len(flag_data) == 3:
-        sim, sent, ids = flag_data
-        reasoning = "No reasoning provided"
-    else:
-        sim, sent, ids, reasoning = flag_data
+    # Filter flags
+    flag_entries = [
+        f for f in st.session_state.flags
+        if f[0] <= max_sim_flags and filter_text_flags.lower() in f[1].lower()
+    ]
 
-    with st.expander(f"({idx}/{len(flag_entries)}) Similarity {sim:.2f}  |  {sent[:80]}…"):
-        col1, col2 = st.columns([1, 1])
+    for idx, flag_data in enumerate(flag_entries, 1):
+        # Support both 3‑tuple and 4‑tuple flag formats
+        if len(flag_data) == 3:
+            sim, sent, ids = flag_data
+            reasoning = "No reasoning provided"
+        else:
+            sim, sent, ids, reasoning = flag_data
 
-        with col1:
-            st.markdown("##### ✏️ **Edit summary sentence**")
-            edited = st.text_area(
-                "Sentence", value=sent, key=f"edit-flag-{idx}", height=80, label_visibility="collapsed"
-            )
-            token_len = len(ENC.encode(edited))
-            st.caption(f"{token_len} tokens")
+        with st.expander(f"({idx}/{len(flag_entries)}) Similarity {sim:.2f}  |  {sent[:80]}…"):
+            col1, col2 = st.columns([1, 1])
 
-            # Display LLM reasoning if available
-            if reasoning and reasoning != "No reasoning provided":
-                st.markdown("##### 🤖 **LLM Reasoning**")
-                st.info(reasoning)
+            with col1:
+                st.markdown("##### ✏️ **Edit summary sentence**")
+                edited = st.text_area(
+                    "Sentence", value=sent, key=f"edit-flag-{idx}", height=80, label_visibility="collapsed"
+                )
+                token_len = len(ENC.encode(edited))
+                st.caption(f"{token_len} tokens")
 
-        with col2:
-            st.markdown("##### 📖 **Source chunk(s)**")
-            if len(ids) == 1 and isinstance(ids[0], str) and ids[0] not in id_to_idx:
-                st.text_area("Source Text", value=ids[0], height=200, label_visibility="collapsed", disabled=True)
-            elif not ids:
-                st.warning("⚠️ No source chunk(s) found for this flag.")
+                # Display LLM reasoning if available
+                if reasoning and reasoning != "No reasoning provided":
+                    st.markdown("##### 🤖 **LLM Reasoning**")
+                    st.info(reasoning)
+
+            with col2:
+                st.markdown("##### 📖 **Source chunk(s)**")
+                if len(ids) == 1 and isinstance(ids[0], str) and ids[0] not in id_to_idx:
+                    st.text_area("Source Text", value=ids[0], height=200, label_visibility="collapsed", disabled=True)
+                elif not ids:
+                    st.warning("⚠️ No source chunk(s) found for this flag.")
+                else:
+                    for cid in ids:
+                        idx2 = _cid_to_idx(cid)
+                        if idx2 is not None:
+                            st.write(chunks[idx2])
+                            st.divider()
+                        else:
+                            st.warning(f"⚠️ Source chunk '{cid}' not found.")
+
+            # Diff viewer (only show if edited differs)
+            if edited.strip() != sent.strip():
+                st.markdown("##### 🔍 Diff")
+                diff_viewer(sent, edited, lang="md")
+
+            # Store edits
+            if "edits" not in st.session_state:
+                st.session_state.edits = {}
+            st.session_state.edits[sent] = edited
+
+with tab_chat:
+    st.header("🔎 Search the Documents")
+    st.caption("Ask a question to find relevant rules and passages across the uploaded documents.")
+
+    # Lazy-precompute normalized embeddings for semantic search
+    if "_emb_norm" not in st.session_state:
+        try:
+            emb = embeddings.astype(np.float32)
+            norms = np.linalg.norm(emb, axis=1, keepdims=True) + 1e-8
+            st.session_state._emb_norm = emb / norms
+        except Exception:
+            st.session_state._emb_norm = None
+
+    # Keyword index + IDF for fallback/hybrid search (built once)
+    if "_kw_index" not in st.session_state:
+        from collections import defaultdict as _dd
+        idx = _dd(set)
+        for i, text in enumerate(chunks):
+            tokens = "".join(c if c.isalnum() else " " for c in text.lower()).split()
+            for w in set(tokens):
+                if w:
+                    idx[w].add(i)
+        # Compute IDF
+        N = float(len(chunks)) if chunks else 1.0
+        idf = {w: math.log((N + 1.0) / (len(posts) + 1.0)) + 1.0 for w, posts in idx.items()}
+        st.session_state._kw_index = idx
+        st.session_state._kw_idf = idf
+
+    # Display prior chat
+    if "chat" not in st.session_state:
+        st.session_state.chat = []
+    for msg in st.session_state.chat:
+        st.chat_message(msg["role"]).write(msg["content"])
+
+    use_ctx = st.checkbox("Use chat history for context", value=True, key="chat_use_ctx")
+    alpha = st.slider("Semantic weight", 0.0, 1.0, 0.7, 0.05, key="chat_alpha")
+
+    user_query = st.chat_input("Ask about HOA rules, e.g., 'parking overnight' or 'fines'.")
+    if user_query:
+        st.session_state.chat.append({"role": "user", "content": user_query})
+
+        # Build contextualized query text
+        ctx_text = ""
+        if use_ctx and st.session_state.chat:
+            # Include up to last 4 turns (user/assistant) excluding the just-appended user message
+            history = st.session_state.chat[:-1][-4:]
+            bits = []
+            for m in history:
+                role = m.get("role", "user")
+                content = str(m.get("content", "")).strip()
+                if content:
+                    bits.append(f"{role}: {content}")
+            if bits:
+                ctx_text = "\n".join(bits)
+        query_text = user_query if not ctx_text else f"{user_query}\n\nContext:\n{ctx_text}"
+
+        # Try semantic search via OpenAI embeddings if available
+        q_vec = None
+        if os.getenv("OPENAI_API_KEY"):
+            try:
+                import importlib
+                ai_mod = importlib.import_module("ai")
+                q_vec = ai_mod.embed(query_text)  # shape (D,)
+                # normalize
+                q_vec = (q_vec / (np.linalg.norm(q_vec) + 1e-8)).astype(np.float32)
+            except Exception:
+                q_vec = None
+
+        hits: list[tuple[int, float]] = []  # (idx, score)
+        # Hybrid ranking: combine cosine similarity (if available) with TF‑IDF
+        terms = [t for t in "".join(c if c.isalnum() else " " for c in query_text.lower()).split() if t]
+        candidates = set()
+        for t in terms:
+            candidates.update(st.session_state._kw_index.get(t, set()))
+
+        tfidf_scores: dict[int, float] = {}
+        idf_map = st.session_state.get("_kw_idf", {})
+        for i in candidates:
+            txt_tokens = "".join(c if c.isalnum() else " " for c in chunks[i].lower()).split()
+            if not txt_tokens:
+                continue
+            # simple term frequency
+            score = 0.0
+            for t in terms:
+                if not t:
+                    continue
+                tf = txt_tokens.count(t)
+                if tf:
+                    score += tf * float(idf_map.get(t, 1.0))
+            if score:
+                tfidf_scores[int(i)] = score
+        # Normalize TF‑IDF to 0..1
+        if tfidf_scores:
+            max_tfidf = max(tfidf_scores.values()) or 1.0
+            for k in list(tfidf_scores.keys()):
+                tfidf_scores[k] = tfidf_scores[k] / max_tfidf
+
+        if q_vec is not None and st.session_state._emb_norm is not None:
+            sims = st.session_state._emb_norm @ q_vec  # cosine similarity
+            # If we have candidates from keywords, restrict to their union; else use all
+            if candidates:
+                indices = np.fromiter((int(i) for i in candidates), dtype=int)
             else:
-                for cid in ids:
-                    idx2 = _cid_to_idx(cid)
-                    if idx2 is not None:
-                        st.write(chunks[idx2])
-                        st.divider()
-                    else:
-                        st.warning(f"⚠️ Source chunk '{cid}' not found.")
+                indices = np.arange(sims.shape[0])
+            combined = []
+            for i in indices:
+                cos = float(sims[int(i)])
+                kw = tfidf_scores.get(int(i), 0.0)
+                combined.append((int(i), alpha * cos + (1.0 - alpha) * kw))
+            combined.sort(key=lambda x: x[1], reverse=True)
+            hits = combined[:10]
+        else:
+            # Keyword‑only ranking
+            hits = sorted(tfidf_scores.items(), key=lambda x: x[1], reverse=True)[:10]
 
-        # Diff viewer (only show if edited differs)
-        if edited.strip() != sent.strip():
-            st.markdown("##### 🔍 Diff")
-            diff_viewer(sent, edited, lang="md")
+        # Compose assistant reply with top matches
+        if not hits:
+            answer = "I couldn't find a relevant passage. Try rephrasing with different keywords."
+            st.session_state.chat.append({"role": "assistant", "content": answer})
+            st.chat_message("assistant").write(answer)
+        else:
+            lines = ["Here are the most relevant passages:"]
+            for rank, (i, score) in enumerate(hits, 1):
+                cid = IDX_TO_ID.get(i, f"idx:{i}")
+                meta = parse_chunk_id(cid) if isinstance(cid, str) else {"document": "", "page": ""}
+                doc = meta.get("document", "").replace("_", " ") or "Document"
+                page = meta.get("page", "?")
+                snippet = chunks[i].strip().replace("\n", " ")
+                if len(snippet) > 320:
+                    snippet = snippet[:320].rstrip() + "…"
+                score_str = f"{score:.2f} (hybrid)" if q_vec is not None else f"{score:.2f} (kw)"
+                lines.append(f"{rank}. {doc} (p.{page}) – {snippet} [id: {cid}]  • score {score_str}")
 
-        # Store edits
-        if "edits" not in st.session_state:
-            st.session_state.edits = {}
-        st.session_state.edits[sent] = edited
-
+            answer = "\n".join(lines)
+            st.session_state.chat.append({"role": "assistant", "content": answer})
+            st.chat_message("assistant").write(answer)
 
 # ------------------------------------------------------------------
-# 📥  Download JSON Draft as PDF
+# 📄  Cohesive Report Export
 # ------------------------------------------------------------------
 st.sidebar.divider()
-st.sidebar.markdown("### Download JSON Draft as PDF")
-
-# Try to load draft.json as default (fallback to docs+data/)
-default_draft_data = None
-try:
-    json_candidates = [Path("draft.json"), Path("docs+data") / "draft.json"]
-    for cand in json_candidates:
-        if cand.exists():
-            with open(cand, "r") as f:
-                default_draft_data = json.load(f)
-            st.sidebar.success(f"✅ Loaded {cand} as default")
-            break
-except Exception as e:
-    st.sidebar.warning(f"⚠️ Could not load draft.json: {e}")
-
-json_draft_file = st.sidebar.file_uploader("Upload JSON draft", type=["json"], key="json-draft-upload")
-
-# Use default data if no file is uploaded
-if json_draft_file is not None:
+st.sidebar.markdown("### Export Cohesive PDF")
+if st.sidebar.button("Download cohesive report PDF", use_container_width=True):
     try:
-        draft_data = json.load(json_draft_file)
-    except Exception as e:
-        st.sidebar.error(f"Failed to parse uploaded file: {e}")
-        draft_data = None
-elif default_draft_data is not None:
-    draft_data = default_draft_data
-    st.sidebar.info("📄 Using draft.json as default")
-else:
-    draft_data = None
-if draft_data is not None:
-    pairs = []
-    executive_summary = None
-    # Check for executive_summary and sections (GovAI draft format)
-    if isinstance(draft_data, dict) and "sections" in draft_data:
-        executive_summary = draft_data.get("executive_summary")
-        for section in draft_data["sections"]:
-            summary = section.get("summary_text", "")
-            source = section.get("source_text", "")
-            doc = section.get("source_document", "")
-            page = section.get("source_page", "")
-            pairs.append({
-                "summary": summary,
-                "source": source,
-                "document": doc,
-                "page": page
-            })
-    else:
-        # Fallback to previous logic
-        if isinstance(draft_data, list):
-            for item in draft_data:
-                if isinstance(item, dict) and "summary" in item and "source_text" in item:
-                    pairs.append({"summary": item["summary"], "source": item["source_text"], "document": "", "page": ""})
-                elif isinstance(item, (list, tuple)) and len(item) == 2:
-                    pairs.append({"summary": item[0], "source": item[1], "document": "", "page": ""})
-        elif isinstance(draft_data, dict) and "summary" in draft_data and "source_text" in draft_data:
-            pairs.append({"summary": draft_data["summary"], "source": draft_data["source_text"], "document": "", "page": ""})
+        sections = build_cohesive_sections()
+        if not sections:
+            st.sidebar.warning("Nothing to export yet.")
         else:
-            st.sidebar.warning("Could not parse summary/source pairs from JSON.")
-            pairs = []
-
-    # Apply edits to JSON draft and offer download
-    if pairs or executive_summary:
-        # Apply edits to JSON draft and offer download
-        if "edits" in st.session_state:
-            # Update pairs with edited summaries
-            for pair in pairs:
-                original = pair["summary"]
-                if original in st.session_state.edits:
-                    pair["summary"] = st.session_state.edits[original]
-        # Build revised JSON structure
-        revised = {}
-        if executive_summary is not None:
-            revised["executive_summary"] = executive_summary
-        revised["sections"] = [
-            {
-                "summary_text": p["summary"],
-                "source_text": p["source"],
-                "source_document": p["document"],
-                "source_page": p["page"]
-            }
-            for p in pairs
-        ]
-        revised_json_str = json.dumps(revised, indent=2)
-        st.sidebar.download_button(
-            label="💾 Download revised draft.json",
-            data=revised_json_str,
-            file_name="draft.json",
-            mime="application/json"
-        )
-
-    # ------------------------------------------------------------------
-    # 📥  Download JSON Draft as PDF
-    # ------------------------------------------------------------------
-    try:
-        # Generate PDF in memory using custom branded PDF class
-        pdf = PDFReport()
-        pdf.set_auto_page_break(auto=True, margin=15)
-
-        from datetime import datetime
-
-        # Cover page
-        pdf.add_page()
-        pdf.set_font("Helvetica", "B", 28)
-        pdf.ln(45)  # vertical spacing
-        pdf.multi_cell(0, 14, _to_latin1("Plantation Governance Report"), align="C")
-        pdf.set_font("Helvetica", "", 14)
-        pdf.ln(8)
-        pdf.multi_cell(0, 10, datetime.now().strftime("Generated on %B %d, %Y"), align="C")
-        pdf.add_page()
-
-        # Optional Executive Summary
-        if executive_summary:
-            pdf.set_font("Helvetica", "B", 18)
-            pdf.multi_cell(0, 12, _to_latin1("Executive Summary"))
-            pdf.ln(2)
-            pdf.set_font("Helvetica", "", 12)
-            pdf.multi_cell(0, 8, _to_latin1(executive_summary))
-
-        # Narrative Sections – group by source document and render as paragraphs
-        if pairs:
-            # Build groups by document
-            from collections import defaultdict
-            doc_groups: Dict[str, list] = defaultdict(list)
-            for item in pairs:
-                key = item["document"] or "General"
-                doc_groups[key].append(item)
-
-            # Deterministic order: General first, then by document name
-            ordered_docs = sorted(doc_groups.keys(), key=lambda k: (k != "General", str(k).lower()))
-
-            for d_idx, doc_name in enumerate(ordered_docs, 1):
-                if pdf.get_y() > pdf.h - pdf.b_margin - 30:
-                    pdf.add_page()
-
-                # Document heading
-                pdf.set_font("Helvetica", "B", 16)
-                pdf.multi_cell(0, 12, _to_latin1(str(doc_name)))
-                pdf.ln(2)
-
-                # Sort entries by page where possible
-                entries = doc_groups[doc_name]
-                def _page_key(entry):
-                    try:
-                        return int(entry.get("page") or 0)
-                    except Exception:
-                        return 0
-                entries.sort(key=_page_key)
-
-                # Paragraph-style summaries with inline citation
-                pdf.set_font("Helvetica", "", 12)
-                for entry in entries:
-                    if pdf.get_y() > pdf.h - pdf.b_margin - 20:
-                        pdf.add_page()
-                        pdf.set_font("Helvetica", "", 12)
-                    citation_bits = []
-                    if entry.get("page"):
-                        citation_bits.append(f"p. {entry['page']}")
-                    citation = f" ({', '.join(citation_bits)})" if citation_bits else ""
-                    paragraph = f"{entry['summary']}{citation}"
-                    pdf.multi_cell(0, 8, _to_latin1(paragraph))
-                    pdf.ln(2)
-
-        pdf_bytes = pdf.output(dest='S').encode('latin-1')
-        pdf_buffer = io.BytesIO(pdf_bytes)
-        st.sidebar.download_button(
-            label="Download PDF",
-            data=pdf_buffer,
-            file_name="draft_summaries.pdf",
-            mime="application/pdf"
-        )
+            pdf_bytes = generate_pdf_bytes(sections)
+            st.sidebar.download_button(
+                label="Download PDF",
+                data=io.BytesIO(pdf_bytes),
+                file_name="governance_report.pdf",
+                mime="application/pdf",
+            )
     except Exception as e:
-        st.sidebar.error(f"Failed to generate PDF: {e}")
-    if not (pairs or executive_summary):
-        st.sidebar.info("No summary/source pairs found in JSON.")
+        st.sidebar.error(f"Failed to build PDF: {e}")
